@@ -128,6 +128,7 @@ def colorEncode(labelmap, colors, mode='RGB'):
 def accuracy(preds, label):
     valid = (label >= 0)
     acc_sum = (valid * (preds == label)).sum()
+    # print((valid * (preds == label)))
     valid_sum = valid.sum()
     acc = float(acc_sum) / (valid_sum + 1e-10)
     return acc, valid_sum
@@ -141,16 +142,33 @@ def intersectionAndUnion(imPred, imLab, numClass):
     imLab += 1
     # Remove classes from unlabeled pixels in gt image.
     # We should not penalize detections in unlabeled portions of the image.
+    # print("imPred")
+    # print(imPred)
+    # print("imLab")
+    # print(imLab)
     imPred = imPred * (imLab > 0)
-
     # Compute area intersection:
+    # intersection = imPred
+    # for idx in range(intersection.shape[0]):
+    # 	for idy in range(intersection.shape[1]):
+    # 		#print((imPred[idx,idy] - imLab[idx,idy]).any())
+    # 		if (imPred[idx,idy] - imLab[idx,idy]).any() :
+    # 			intersection[idx,idy] = [-1,-1,-1]
     intersection = imPred * (imPred == imLab)
     (area_intersection, _) = np.histogram(
         intersection, bins=numClass, range=(1, numClass))
+    # print("Intersection")
+    # print(area_intersection)
+    # print(area_intersection.shape)
 
     # Compute area union:
     (area_pred, _) = np.histogram(imPred, bins=numClass, range=(1, numClass))
     (area_lab, _) = np.histogram(imLab, bins=numClass, range=(1, numClass))
+    # print("area_pred")
+    # print(area_pred)
+    # print("area_lab")
+    # print(area_lab)
+    # print(np.unique(area_lab, return_counts=True)[0])
     area_union = area_pred + area_lab - area_intersection
 
     return (area_intersection, area_union)
