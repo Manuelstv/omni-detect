@@ -3,6 +3,7 @@ import torchvision
 import os, csv, torch, numpy, scipy.io, PIL.Image, torchvision.transforms
 import re
 import argparse
+import sys
 
 # Our libs
 # import mit_semseg
@@ -27,18 +28,24 @@ class OmniSemSeg():
         self.colors[2] = [3,2,145] #Sky
         self.colors[4] = [0,214,0] #Trees
         self.colors[13] = [48,14,2] #Earth
+        
         self.colors[91] = [48,14,2] #Ground
+        self.colors[52] = [48,14,2] #Path
+        # self.colors[16] = [48,14,2] #Mountain
         
         self.colors[17] = [0,214,0] #Plant
-        self.colors[52] = [48,14,2] #Path
+        # self.colors[106] = [0,214,0] #Canopy
+
+        
 
         self.names = {}
         self.init_names()
         # for idx, elt in enumerate(self.colors):
         #     print(self.names[idx+1],self.colors[idx])
 
-        self.model_sphe = self.model_sphe_builder("sphe")
-        self.model_persp = self.model_sphe_builder("persp")
+        self.model_sphe = self.model_builder("sphe")
+        # self.model_sphe = self.model_builder("persp")
+        self.model_persp = self.model_builder("persp")
 
         self.datadir = datadir
         self.ext = "_0.png"
@@ -56,7 +63,7 @@ class OmniSemSeg():
             for row in reader:
                 self.names[int(row[0])] = row[5].split(";")[0]
 
-    def model_sphe_builder(self, imode="sphe"):
+    def model_builder(self, imode="sphe"):
         if imode == "sphe":
             # Network Builders
             net_encoder = seg_sphe.ModelBuilder.build_encoder(
@@ -101,23 +108,17 @@ class OmniSemSeg():
 
     def load_imgs(self):
         # list of images to process
-        list_img = [self.datadir+file for file in sorted(os.listdir(self.datadir), key=lambda x:float(re.findall("(\d+)",x)[0])) if (file.endswith(self.ext))]
+        # list_img = [self.datadir+file for file in sorted(os.listdir(self.datadir), key=lambda x:float(re.findall("(\d+)",x)[0])) if (file.endswith(self.ext))]
+        list_img = sorted([self.datadir+file for file in os.listdir(self.datadir) if (file.endswith(self.ext))], key=lambda f: int(f.rsplit("/", 1)[-1].rsplit("_",1)[0]))
+        # print(list_img)
         return list_img
-
-    # pil_image = PIL.Image.open(list_img[0]).convert('RGB')
-    # img_original = numpy.array(pil_image)
-    # img_data = pil_to_tensor(pil_image)
-    # singleton_batch = {'img_data': img_data[None].cuda()}
-    # output_size = img_data.shape[1:]
 
     def batch_semseg_pred(self):
         for elt in self.list_img:
             self.semseg_pred(elt)
 
-    def semseg_pred(self,elt):
-        # img_name = elt
+    def semseg_pred(self, elt):
         pil_image = PIL.Image.open(elt).convert('RGB')
-        # img_original = numpy.array(pil_image)
         img_data = self.pil_to_tensor(pil_image)
         singleton_batch = {'img_data': img_data[None].cuda()}
         output_size = img_data.shape[1:]
@@ -129,7 +130,6 @@ class OmniSemSeg():
         # Get the predicted scores for each pixel
         _, pred_sphe = torch.max(scores_sphe, dim=1)
         pred_sphe = pred_sphe.cpu()[0].numpy()
-        #save_result(img_original, pred, img_name, post='_sphe')
 
         # Run the segmentation at the highest resolution.
         with torch.no_grad():
@@ -138,42 +138,80 @@ class OmniSemSeg():
         # Get the predicted scores for each pixel
         _, pred_persp = torch.max(scores_persp, dim=1)
         pred_persp = pred_persp.cpu()[0].numpy()
-        #save_result(img_original, pred, img_name, post='_persp')
 
         return pred_sphe, pred_persp
 
-        #self.save_all(img_original, pred_persp, pred_persp, img_name, dir_result=self.savedir)
+    # def visualize_result(self, img, pred, index=None):
 
-    def visualize_result(self, img, pred, index=None):
+    #     pil_image = PIL.Image.open(img).convert('RGB')
+    #     img_original = numpy.array(pil_image)
 
-        pil_image = PIL.Image.open(img).convert('RGB')
-        img_original = numpy.array(pil_image)
+    #     # filter prediction class if requested
+    #     if index is not None:
+    #         pred = pred.copy()
+    #         pred[pred != index] = -1
+    #         print(f'{self.names[index+1]}:')
 
-        # filter prediction class if requested
-        if index is not None:
-            pred = pred.copy()
-            pred[pred != index] = -1
-            print(f'{self.names[index+1]}:')
+    #     # colorize prediction
+    #     pred_color = colorEncode(pred, self.colors).astype(numpy.uint8)
 
+    #     # aggregate images and save
+    #     im_vis = numpy.concatenate((img_original, pred_color), axis=1)
+    #     img_final = PIL.Image.fromarray(im_vis)
+
+    # def save_result(self, img, pred, img_name, dir_result='./OUTPUT/', pre='', post=''):
+    #     # colorize prediction
+    #     pred_color = colorEncode(pred, self.colors).astype(numpy.uint8)
+
+    #     # aggregate images and save
+    #     im_vis = numpy.concatenate((img, pred_color), axis=1)
+    #     img_final = PIL.Image.fromarray(im_vis)
+    #     os.makedirs(dir_result, exist_ok=True)
+    #     img_final.save(os.path.join(dir_result, pre+(img_name.split('/')[-1])[0:-4]+post+'.png'))
+
+    def save_simple(self, img_orig, pred_persp, pred_sphe):
         # colorize prediction
-        pred_color = colorEncode(pred, self.colors).astype(numpy.uint8)
+        pred_persp_color = colorEncode(pred_persp, self.colors).astype(numpy.uint8)
+        pred_sphe_color = colorEncode(pred_sphe, self.colors).astype(numpy.uint8)
 
         # aggregate images and save
-        im_vis = numpy.concatenate((img_original, pred_color), axis=1)
+        im_vis = numpy.concatenate((pred_persp_color, pred_sphe_color), axis=1)
         img_final = PIL.Image.fromarray(im_vis)
 
-        # display(img_final)
-        #img_final.save(os.path.join(dir_result, img_name.replace('.jpg', '.png')))
+        new_im = PIL.Image.new('RGB', (img_final.size[0], 2*img_final.size[1]))
 
-    def save_result(self, img, pred, img_name, dir_result='./OUTPUT/', pre='', post=''):
-        # colorize prediction
-        pred_color = colorEncode(pred, self.colors).astype(numpy.uint8)
+        new_im.paste(PIL.Image.open(img_orig))
+        # it =  str(int((img_orig.split('/')[-1]).split('_')[0]))
+        it =  str((img_orig.split('/')[-1]).split('_0')[0])
+        gt_image = img_orig[0:-len((img_orig.split('/')[-1]))][0:-3]+'/2/'+it+'_2.png'
+        # print(gt_image)
+        # sys.exit()
+        new_im.paste(PIL.Image.open(gt_image),(int(img_final.size[0]/2),0))
+        new_im.paste(PIL.Image.fromarray(pred_persp_color),(0,img_final.size[1]))
+        # new_im.paste(img_final,(0,img_final.size[1]))
 
-        # aggregate images and save
-        im_vis = numpy.concatenate((img, pred_color), axis=1)
-        img_final = PIL.Image.fromarray(im_vis)
-        os.makedirs(dir_result, exist_ok=True)
-        img_final.save(os.path.join(dir_result, pre+(img_name.split('/')[-1])[0:-4]+post+'.png'))
+        from PIL import ImageDraw, ImageFont
+
+        img_edit = ImageDraw.Draw(new_im)
+        text_color = (255, 255, 255)
+        # fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 40)
+        fnt = ImageFont.truetype("/usr/share/fonts/liberation/LiberationSans-Regular.ttf", 40)
+
+        ipred_unique = numpy.unique(pred_persp[:,:], return_counts=True)[0]
+        ipred_ratio =  10
+        ipred_dist = int(img_final.size[1]/ipred_ratio)
+        idx_loc = 0
+        for ipred in ipred_unique:
+            posx = int(img_final.size[0]*5/10) + 150 * numpy.floor(idx_loc/ipred_ratio)
+            posy = img_final.size[1] + ipred_dist * (idx_loc%ipred_ratio) + ipred_dist/2
+            img_edit.text((posx,posy), self.names[ipred+1], text_color, font=fnt, anchor="ls")
+            img_edit.rectangle((posx-30,posy-20,posx-10,posy), fill=(self.colors[ipred][0],self.colors[ipred][1],self.colors[ipred][2]), outline=(255, 255, 255))
+            idx_loc += 1
+
+
+        os.makedirs(self.savedir, exist_ok=True)
+        new_im.save(os.path.join(self.savedir, it+'.png'))
+        
 
     def save_all(self, img_orig, pred_persp, pred_sphe):
 
@@ -411,7 +449,11 @@ PARSER.add_argument('-s', '--savedir',
                     default='./OUTPUT/',
                     help='Source directory containing the cubemap images in a '
                          '\'CUBEMAP\' folder (defaults to ./CAPTURES).')
-
+PARSER.add_argument('-m', '--mode',
+                    nargs='?',
+                    type=str,
+                    default='test',
+                    help='Mode of execution test or eval vs GT.')
 PARSER.add_argument('-v', '--VERBOSE',
                     nargs='*',
                     action='store',
@@ -490,9 +532,9 @@ def main():
         print("Saving results to %s" % SAVEDIR)
 
     print("Nombre images: ",len(OSS.list_img))
-    mode = "eval"
-    if mode == "test":
-        for elt in OSS.list_img[0:3]:
+    
+    if IMODE == "test":
+        for elt in OSS.list_img:
             torch.cuda.synchronize()
             tic = time.perf_counter()
 
@@ -501,9 +543,10 @@ def main():
             time_end = time.perf_counter() - tic
             # if VERBOSE:
             print("Done for ",str(elt), "in ", time_end)
-            OSS.save_all(elt, pred_persp, pred_sphe)
+            OSS.save_simple(elt, pred_persp, pred_sphe)
+            # OSS.save_all(elt, pred_persp, pred_sphe)
 
-    elif mode == "eval":
+    elif IMODE == "eval":
 
 
         from mit_semseg.lib.utils import as_numpy
@@ -560,6 +603,7 @@ if __name__ == '__main__':
     args = PARSER.parse_args()
     DATADIR = args.datadir
     SAVEDIR = args.savedir
+    IMODE = args.mode
     VERBOSE = args.VERBOSE is not None
     main()
 
