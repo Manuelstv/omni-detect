@@ -34,6 +34,7 @@ class BaseDataset(torch.utils.data.Dataset):
         self.normalize = transforms.Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225])
+        self.rotate = transforms.RandomRotation(degrees=(-90,90))
 
     def parse_input_list(self, odgt, max_sample=-1, start_idx=-1, end_idx=-1):
         if isinstance(odgt, list):
@@ -53,8 +54,10 @@ class BaseDataset(torch.utils.data.Dataset):
     def img_transform(self, img):
         # 0-255 to 0-1
         img = np.float32(np.array(img)) / 255.
-        img = img.transpose((2, 0, 1))
+        img = img.transpose((2, 0, 1))        
         img = self.normalize(torch.from_numpy(img.copy()))
+        #img = self.rotate(img)
+        
         return img
 
     def segm_transform(self, segm):
