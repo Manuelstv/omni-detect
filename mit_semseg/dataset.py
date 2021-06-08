@@ -56,7 +56,7 @@ class BaseDataset(torch.utils.data.Dataset):
         img = np.float32(np.array(img)) / 255.
         img = img.transpose((2, 0, 1))        
         img = self.normalize(torch.from_numpy(img.copy()))
-        img = self.rotate(img)
+        #img = self.rotate(img)
         #print("Rotation is enabled")
         
         return img
