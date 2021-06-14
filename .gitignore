@@ -1,4 +1,5 @@
 *.pyc
+wget-log
 
 ckpt/
 vis/
@@ -6,6 +7,8 @@ log/
 pretrained/
 data/ADEChallengeData2016/
 OUTPUT/
+notebooks/
+
 
 .ipynb_checkpoints
 

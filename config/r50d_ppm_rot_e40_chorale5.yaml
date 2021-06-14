@@ -36,10 +36,10 @@ TRAIN:
 
 VAL:
   visualize: False
-  checkpoint: "epoch_40.pth"
+  checkpoint: "epoch_40_chorale5.pth"
 
 TEST:
-  checkpoint: "epoch_40.pth"
+  checkpoint: "epoch_40_chorale5.pth"
   result: "./"
 
-DIR: "ckpt/ade20k-resnet50dilated-ppm_deepsup_40"
+DIR: "ckpt/r50d_ppm_rot_e40_chorale5"
