@@ -19,7 +19,7 @@ MODEL:
 
 TRAIN:
   batch_size_per_gpu: 2
-  num_epoch: 40
+  num_epoch: 100
   start_epoch: 0
   epoch_iters: 5000
   optim: "SGD"
@@ -36,10 +36,10 @@ TRAIN:
 
 VAL:
   visualize: False
-  checkpoint: "epoch_40_cinord.pth"
+  checkpoint: "epoch_100.pth"
 
 TEST:
-  checkpoint: "epoch_40_cinord.pth"
+  checkpoint: "epoch_100.pth"
   result: "./"
 
-DIR: "ckpt/r50d_ppm_norot_e40_cinord"
+DIR: "ckpt/r50d_ppm_rot_e100_nef_45"

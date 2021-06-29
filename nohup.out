@@ -1,0 +1,291 @@
+[2021-06-14 10:54:22,958 INFO train.py line 240 222180] Loaded configuration file config/ade20k-resnet50dilated-ppm_deepsup.yaml
+[2021-06-14 10:54:22,964 INFO train.py line 241 222180] Running with config:
+DATASET:
+  imgMaxSize: 1000
+  imgSizes: (300, 375, 450, 525, 600)
+  list_train: ../../../DATASETS/ADE20K/training.odgt
+  list_val: ../../../DATASETS/ADE20K/validation.odgt
+  num_class: 150
+  padding_constant: 8
+  random_flip: True
+  root_dataset: ../../../DATASETS/ADE20K/
+  segm_downsampling_rate: 8
+DIR: ckpt/ade20k-resnet50dilated-ppm_deepsup_40
+MODEL:
+  arch_decoder: ppm_deepsup
+  arch_encoder: resnet50dilated
+  fc_dim: 2048
+  weights_decoder: 
+  weights_encoder: 
+TEST:
+  batch_size: 1
+  checkpoint: epoch_40.pth
+  result: ./
+TRAIN:
+  batch_size_per_gpu: 2
+  beta1: 0.9
+  deep_sup_scale: 0.4
+  disp_iter: 20
+  epoch_iters: 5000
+  fix_bn: False
+  lr_decoder: 0.02
+  lr_encoder: 0.02
+  lr_pow: 0.9
+  num_epoch: 40
+  optim: SGD
+  seed: 304
+  start_epoch: 0
+  weight_decay: 0.0001
+  workers: 16
+VAL:
+  batch_size: 1
+  checkpoint: epoch_40.pth
+  visualize: False
+[2021-06-14 10:54:22,990 INFO train.py line 246 222180] Outputing checkpoints to: ckpt/ade20k-resnet50dilated-ppm_deepsup_40
+# samples: 20210
+1 Epoch = 5000 iters
+Epoch: [1][0/5000], Time: 1.94, Data: 0.64, lr_encoder: 0.020000, lr_decoder: 0.020000, Accuracy: 0.18, Loss: 7.473684
+Epoch: [1][20/5000], Time: 0.41, Data: 0.08, lr_encoder: 0.019998, lr_decoder: 0.019998, Accuracy: 20.83, Loss: 6.018122
+Epoch: [1][40/5000], Time: 0.36, Data: 0.07, lr_encoder: 0.019996, lr_decoder: 0.019996, Accuracy: 24.23, Loss: 5.472270
+Epoch: [1][60/5000], Time: 0.35, Data: 0.07, lr_encoder: 0.019995, lr_decoder: 0.019995, Accuracy: 25.84, Loss: 5.202265
+Epoch: [1][80/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019993, lr_decoder: 0.019993, Accuracy: 27.05, Loss: 5.003445
+Epoch: [1][100/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019991, lr_decoder: 0.019991, Accuracy: 27.17, Loss: 4.939255
+Epoch: [1][120/5000], Time: 0.36, Data: 0.06, lr_encoder: 0.019989, lr_decoder: 0.019989, Accuracy: 27.63, Loss: 4.894628
+Epoch: [1][140/5000], Time: 0.37, Data: 0.06, lr_encoder: 0.019987, lr_decoder: 0.019987, Accuracy: 27.34, Loss: 4.852543
+Epoch: [1][160/5000], Time: 0.37, Data: 0.06, lr_encoder: 0.019986, lr_decoder: 0.019986, Accuracy: 27.49, Loss: 4.769508
+Epoch: [1][180/5000], Time: 0.36, Data: 0.06, lr_encoder: 0.019984, lr_decoder: 0.019984, Accuracy: 27.57, Loss: 4.711332
+Epoch: [1][200/5000], Time: 0.37, Data: 0.06, lr_encoder: 0.019982, lr_decoder: 0.019982, Accuracy: 27.97, Loss: 4.646510
+Epoch: [1][220/5000], Time: 0.36, Data: 0.06, lr_encoder: 0.019980, lr_decoder: 0.019980, Accuracy: 28.03, Loss: 4.627338
+Epoch: [1][240/5000], Time: 0.36, Data: 0.06, lr_encoder: 0.019978, lr_decoder: 0.019978, Accuracy: 28.37, Loss: 4.592182
+Epoch: [1][260/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019977, lr_decoder: 0.019977, Accuracy: 29.06, Loss: 4.522051
+Epoch: [1][280/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019975, lr_decoder: 0.019975, Accuracy: 29.62, Loss: 4.490113
+Epoch: [1][300/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019973, lr_decoder: 0.019973, Accuracy: 30.01, Loss: 4.460147
+Epoch: [1][320/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019971, lr_decoder: 0.019971, Accuracy: 30.00, Loss: 4.422069
+Epoch: [1][340/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019969, lr_decoder: 0.019969, Accuracy: 30.40, Loss: 4.389795
+Epoch: [1][360/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019968, lr_decoder: 0.019968, Accuracy: 30.45, Loss: 4.368519
+Epoch: [1][380/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019966, lr_decoder: 0.019966, Accuracy: 30.74, Loss: 4.344979
+Epoch: [1][400/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019964, lr_decoder: 0.019964, Accuracy: 31.17, Loss: 4.308002
+Epoch: [1][420/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019962, lr_decoder: 0.019962, Accuracy: 31.27, Loss: 4.298804
+Epoch: [1][440/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019960, lr_decoder: 0.019960, Accuracy: 31.32, Loss: 4.280804
+Epoch: [1][460/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019959, lr_decoder: 0.019959, Accuracy: 31.39, Loss: 4.265612
+Epoch: [1][480/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019957, lr_decoder: 0.019957, Accuracy: 31.66, Loss: 4.252763
+Epoch: [1][500/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019955, lr_decoder: 0.019955, Accuracy: 32.02, Loss: 4.224757
+Epoch: [1][520/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019953, lr_decoder: 0.019953, Accuracy: 32.32, Loss: 4.214587
+Epoch: [1][540/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019951, lr_decoder: 0.019951, Accuracy: 32.44, Loss: 4.201956
+Epoch: [1][560/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019950, lr_decoder: 0.019950, Accuracy: 32.66, Loss: 4.188816
+Epoch: [1][580/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019948, lr_decoder: 0.019948, Accuracy: 32.75, Loss: 4.184472
+Epoch: [1][600/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019946, lr_decoder: 0.019946, Accuracy: 33.09, Loss: 4.152721
+Epoch: [1][620/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019944, lr_decoder: 0.019944, Accuracy: 33.36, Loss: 4.132716
+Epoch: [1][640/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019942, lr_decoder: 0.019942, Accuracy: 33.65, Loss: 4.111667
+Epoch: [1][660/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019941, lr_decoder: 0.019941, Accuracy: 33.53, Loss: 4.122726
+Epoch: [1][680/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019939, lr_decoder: 0.019939, Accuracy: 33.61, Loss: 4.119613
+Epoch: [1][700/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019937, lr_decoder: 0.019937, Accuracy: 33.81, Loss: 4.101710
+Epoch: [1][720/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019935, lr_decoder: 0.019935, Accuracy: 33.90, Loss: 4.094156
+Epoch: [1][740/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019933, lr_decoder: 0.019933, Accuracy: 34.20, Loss: 4.077438
+Epoch: [1][760/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019932, lr_decoder: 0.019932, Accuracy: 34.32, Loss: 4.066723
+Epoch: [1][780/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019930, lr_decoder: 0.019930, Accuracy: 34.35, Loss: 4.061401
+Epoch: [1][800/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019928, lr_decoder: 0.019928, Accuracy: 34.49, Loss: 4.059272
+Epoch: [1][820/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019926, lr_decoder: 0.019926, Accuracy: 34.59, Loss: 4.051407
+Epoch: [1][840/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019924, lr_decoder: 0.019924, Accuracy: 34.72, Loss: 4.041330
+Epoch: [1][860/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019923, lr_decoder: 0.019923, Accuracy: 34.78, Loss: 4.037891
+Epoch: [1][880/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019921, lr_decoder: 0.019921, Accuracy: 34.77, Loss: 4.038007
+Epoch: [1][900/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019919, lr_decoder: 0.019919, Accuracy: 34.70, Loss: 4.040854
+Epoch: [1][920/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019917, lr_decoder: 0.019917, Accuracy: 34.66, Loss: 4.041984
+Epoch: [1][940/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019915, lr_decoder: 0.019915, Accuracy: 34.69, Loss: 4.040231
+Epoch: [1][960/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019914, lr_decoder: 0.019914, Accuracy: 34.63, Loss: 4.042486
+Epoch: [1][980/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019912, lr_decoder: 0.019912, Accuracy: 34.73, Loss: 4.031535
+Epoch: [1][1000/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019910, lr_decoder: 0.019910, Accuracy: 34.79, Loss: 4.026740
+Epoch: [1][1020/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019908, lr_decoder: 0.019908, Accuracy: 34.90, Loss: 4.016896
+Epoch: [1][1040/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019906, lr_decoder: 0.019906, Accuracy: 35.03, Loss: 4.008416
+Epoch: [1][1060/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019905, lr_decoder: 0.019905, Accuracy: 35.00, Loss: 4.010629
+Epoch: [1][1080/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019903, lr_decoder: 0.019903, Accuracy: 35.15, Loss: 3.996375
+Epoch: [1][1100/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019901, lr_decoder: 0.019901, Accuracy: 35.22, Loss: 3.990287
+Epoch: [1][1120/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019899, lr_decoder: 0.019899, Accuracy: 35.23, Loss: 3.985556
+Epoch: [1][1140/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019897, lr_decoder: 0.019897, Accuracy: 35.25, Loss: 3.986296
+Epoch: [1][1160/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019896, lr_decoder: 0.019896, Accuracy: 35.39, Loss: 3.978837
+Epoch: [1][1180/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019894, lr_decoder: 0.019894, Accuracy: 35.53, Loss: 3.968976
+Epoch: [1][1200/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019892, lr_decoder: 0.019892, Accuracy: 35.65, Loss: 3.958032
+Epoch: [1][1220/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019890, lr_decoder: 0.019890, Accuracy: 35.77, Loss: 3.949649
+Epoch: [1][1240/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019888, lr_decoder: 0.019888, Accuracy: 35.93, Loss: 3.941517
+Epoch: [1][1260/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019887, lr_decoder: 0.019887, Accuracy: 36.12, Loss: 3.932113
+Epoch: [1][1280/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019885, lr_decoder: 0.019885, Accuracy: 36.23, Loss: 3.926154
+Epoch: [1][1300/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019883, lr_decoder: 0.019883, Accuracy: 36.33, Loss: 3.916613
+Epoch: [1][1320/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019881, lr_decoder: 0.019881, Accuracy: 36.44, Loss: 3.910094
+Epoch: [1][1340/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019879, lr_decoder: 0.019879, Accuracy: 36.45, Loss: 3.907268
+Epoch: [1][1360/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019878, lr_decoder: 0.019878, Accuracy: 36.51, Loss: 3.899687
+Epoch: [1][1380/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019876, lr_decoder: 0.019876, Accuracy: 36.56, Loss: 3.895505
+Epoch: [1][1400/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019874, lr_decoder: 0.019874, Accuracy: 36.70, Loss: 3.887716
+Epoch: [1][1420/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019872, lr_decoder: 0.019872, Accuracy: 36.84, Loss: 3.878867
+Epoch: [1][1440/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019870, lr_decoder: 0.019870, Accuracy: 37.01, Loss: 3.866576
+Epoch: [1][1460/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019869, lr_decoder: 0.019869, Accuracy: 37.16, Loss: 3.857804
+Epoch: [1][1480/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019867, lr_decoder: 0.019867, Accuracy: 37.29, Loss: 3.850324
+Epoch: [1][1500/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019865, lr_decoder: 0.019865, Accuracy: 37.25, Loss: 3.849322
+Epoch: [1][1520/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019863, lr_decoder: 0.019863, Accuracy: 37.28, Loss: 3.846863
+Epoch: [1][1540/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019861, lr_decoder: 0.019861, Accuracy: 37.35, Loss: 3.842105
+Epoch: [1][1560/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019860, lr_decoder: 0.019860, Accuracy: 37.38, Loss: 3.841260
+Epoch: [1][1580/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019858, lr_decoder: 0.019858, Accuracy: 37.51, Loss: 3.833142
+Epoch: [1][1600/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019856, lr_decoder: 0.019856, Accuracy: 37.65, Loss: 3.826095
+Epoch: [1][1620/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019854, lr_decoder: 0.019854, Accuracy: 37.83, Loss: 3.818097
+Epoch: [1][1640/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019852, lr_decoder: 0.019852, Accuracy: 37.90, Loss: 3.815035
+Epoch: [1][1660/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019851, lr_decoder: 0.019851, Accuracy: 38.05, Loss: 3.805334
+Epoch: [1][1680/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019849, lr_decoder: 0.019849, Accuracy: 38.13, Loss: 3.802879
+Epoch: [1][1700/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019847, lr_decoder: 0.019847, Accuracy: 38.24, Loss: 3.796004
+Epoch: [1][1720/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019845, lr_decoder: 0.019845, Accuracy: 38.30, Loss: 3.790855
+Epoch: [1][1740/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019843, lr_decoder: 0.019843, Accuracy: 38.44, Loss: 3.780680
+Epoch: [1][1760/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019842, lr_decoder: 0.019842, Accuracy: 38.51, Loss: 3.776266
+Epoch: [1][1780/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019840, lr_decoder: 0.019840, Accuracy: 38.58, Loss: 3.772268
+Epoch: [1][1800/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019838, lr_decoder: 0.019838, Accuracy: 38.63, Loss: 3.768118
+Epoch: [1][1820/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019836, lr_decoder: 0.019836, Accuracy: 38.73, Loss: 3.760564
+Epoch: [1][1840/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019834, lr_decoder: 0.019834, Accuracy: 38.82, Loss: 3.756200
+Epoch: [1][1860/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019833, lr_decoder: 0.019833, Accuracy: 38.93, Loss: 3.750564
+Epoch: [1][1880/5000], Time: 0.35, Data: 0.06, lr_encoder: 0.019831, lr_decoder: 0.019831, Accuracy: 39.02, Loss: 3.744544
+Epoch: [1][1900/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019829, lr_decoder: 0.019829, Accuracy: 39.04, Loss: 3.742239
+Epoch: [1][1920/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019827, lr_decoder: 0.019827, Accuracy: 39.05, Loss: 3.742725
+Epoch: [1][1940/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019825, lr_decoder: 0.019825, Accuracy: 39.17, Loss: 3.735650
+Epoch: [1][1960/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019824, lr_decoder: 0.019824, Accuracy: 39.26, Loss: 3.729189
+Epoch: [1][1980/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019822, lr_decoder: 0.019822, Accuracy: 39.32, Loss: 3.723422
+Epoch: [1][2000/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019820, lr_decoder: 0.019820, Accuracy: 39.33, Loss: 3.724875
+Epoch: [1][2020/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019818, lr_decoder: 0.019818, Accuracy: 39.41, Loss: 3.721703
+Epoch: [1][2040/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019816, lr_decoder: 0.019816, Accuracy: 39.45, Loss: 3.717436
+Epoch: [1][2060/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019815, lr_decoder: 0.019815, Accuracy: 39.52, Loss: 3.712581
+Epoch: [1][2080/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019813, lr_decoder: 0.019813, Accuracy: 39.67, Loss: 3.702550
+Epoch: [1][2100/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019811, lr_decoder: 0.019811, Accuracy: 39.81, Loss: 3.693319
+Epoch: [1][2120/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019809, lr_decoder: 0.019809, Accuracy: 39.83, Loss: 3.691516
+Epoch: [1][2140/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019807, lr_decoder: 0.019807, Accuracy: 39.79, Loss: 3.693347
+Epoch: [1][2160/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019805, lr_decoder: 0.019805, Accuracy: 39.86, Loss: 3.687155
+Epoch: [1][2180/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019804, lr_decoder: 0.019804, Accuracy: 39.98, Loss: 3.677279
+Epoch: [1][2200/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019802, lr_decoder: 0.019802, Accuracy: 40.02, Loss: 3.674924
+Epoch: [1][2220/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019800, lr_decoder: 0.019800, Accuracy: 39.96, Loss: 3.677092
+Epoch: [1][2240/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019798, lr_decoder: 0.019798, Accuracy: 39.94, Loss: 3.678547
+Epoch: [1][2260/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019796, lr_decoder: 0.019796, Accuracy: 39.99, Loss: 3.674717
+Epoch: [1][2280/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019795, lr_decoder: 0.019795, Accuracy: 40.03, Loss: 3.672986
+Epoch: [1][2300/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019793, lr_decoder: 0.019793, Accuracy: 40.08, Loss: 3.671658
+Epoch: [1][2320/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019791, lr_decoder: 0.019791, Accuracy: 40.15, Loss: 3.665601
+Epoch: [1][2340/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019789, lr_decoder: 0.019789, Accuracy: 40.24, Loss: 3.659711
+Epoch: [1][2360/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019787, lr_decoder: 0.019787, Accuracy: 40.27, Loss: 3.659805
+Epoch: [1][2380/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019786, lr_decoder: 0.019786, Accuracy: 40.30, Loss: 3.657106
+Epoch: [1][2400/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019784, lr_decoder: 0.019784, Accuracy: 40.34, Loss: 3.655456
+Epoch: [1][2420/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019782, lr_decoder: 0.019782, Accuracy: 40.39, Loss: 3.650910
+Epoch: [1][2440/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019780, lr_decoder: 0.019780, Accuracy: 40.39, Loss: 3.649503
+Epoch: [1][2460/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019778, lr_decoder: 0.019778, Accuracy: 40.43, Loss: 3.646074
+Epoch: [1][2480/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019777, lr_decoder: 0.019777, Accuracy: 40.47, Loss: 3.643997
+Epoch: [1][2500/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019775, lr_decoder: 0.019775, Accuracy: 40.52, Loss: 3.640682
+Epoch: [1][2520/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019773, lr_decoder: 0.019773, Accuracy: 40.52, Loss: 3.641764
+Epoch: [1][2540/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019771, lr_decoder: 0.019771, Accuracy: 40.55, Loss: 3.639811
+Epoch: [1][2560/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019769, lr_decoder: 0.019769, Accuracy: 40.61, Loss: 3.636706
+Epoch: [1][2580/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019768, lr_decoder: 0.019768, Accuracy: 40.66, Loss: 3.633367
+Epoch: [1][2600/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019766, lr_decoder: 0.019766, Accuracy: 40.70, Loss: 3.630501
+Epoch: [1][2620/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019764, lr_decoder: 0.019764, Accuracy: 40.75, Loss: 3.626803
+Epoch: [1][2640/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019762, lr_decoder: 0.019762, Accuracy: 40.80, Loss: 3.623274
+Epoch: [1][2660/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019760, lr_decoder: 0.019760, Accuracy: 40.83, Loss: 3.620556
+Epoch: [1][2680/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019759, lr_decoder: 0.019759, Accuracy: 40.87, Loss: 3.617841
+Epoch: [1][2700/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019757, lr_decoder: 0.019757, Accuracy: 40.95, Loss: 3.613707
+Epoch: [1][2720/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019755, lr_decoder: 0.019755, Accuracy: 40.96, Loss: 3.611517
+Epoch: [1][2740/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019753, lr_decoder: 0.019753, Accuracy: 40.97, Loss: 3.609672
+Epoch: [1][2760/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019751, lr_decoder: 0.019751, Accuracy: 41.05, Loss: 3.604611
+Epoch: [1][2780/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019750, lr_decoder: 0.019750, Accuracy: 41.12, Loss: 3.600361
+Epoch: [1][2800/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019748, lr_decoder: 0.019748, Accuracy: 41.20, Loss: 3.596413
+Epoch: [1][2820/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019746, lr_decoder: 0.019746, Accuracy: 41.26, Loss: 3.592198
+Epoch: [1][2840/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019744, lr_decoder: 0.019744, Accuracy: 41.32, Loss: 3.586916
+Epoch: [1][2860/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019742, lr_decoder: 0.019742, Accuracy: 41.37, Loss: 3.584495
+Epoch: [1][2880/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019741, lr_decoder: 0.019741, Accuracy: 41.39, Loss: 3.582031
+Epoch: [1][2900/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019739, lr_decoder: 0.019739, Accuracy: 41.44, Loss: 3.580008
+Epoch: [1][2920/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019737, lr_decoder: 0.019737, Accuracy: 41.46, Loss: 3.578330
+Epoch: [1][2940/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019735, lr_decoder: 0.019735, Accuracy: 41.52, Loss: 3.574587
+Epoch: [1][2960/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019733, lr_decoder: 0.019733, Accuracy: 41.56, Loss: 3.570458
+Epoch: [1][2980/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019732, lr_decoder: 0.019732, Accuracy: 41.62, Loss: 3.567800
+Epoch: [1][3000/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019730, lr_decoder: 0.019730, Accuracy: 41.68, Loss: 3.564321
+Epoch: [1][3020/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019728, lr_decoder: 0.019728, Accuracy: 41.69, Loss: 3.564097
+Epoch: [1][3040/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019726, lr_decoder: 0.019726, Accuracy: 41.72, Loss: 3.561097
+Epoch: [1][3060/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019724, lr_decoder: 0.019724, Accuracy: 41.73, Loss: 3.558951
+Epoch: [1][3080/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019723, lr_decoder: 0.019723, Accuracy: 41.76, Loss: 3.556156
+Epoch: [1][3100/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019721, lr_decoder: 0.019721, Accuracy: 41.79, Loss: 3.554663
+Epoch: [1][3120/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019719, lr_decoder: 0.019719, Accuracy: 41.86, Loss: 3.551228
+Epoch: [1][3140/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019717, lr_decoder: 0.019717, Accuracy: 41.89, Loss: 3.550288
+Epoch: [1][3160/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019715, lr_decoder: 0.019715, Accuracy: 41.94, Loss: 3.546593
+Epoch: [1][3180/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019714, lr_decoder: 0.019714, Accuracy: 41.95, Loss: 3.546146
+Epoch: [1][3200/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019712, lr_decoder: 0.019712, Accuracy: 41.95, Loss: 3.546205
+Epoch: [1][3220/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019710, lr_decoder: 0.019710, Accuracy: 41.95, Loss: 3.545200
+Epoch: [1][3240/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019708, lr_decoder: 0.019708, Accuracy: 41.96, Loss: 3.544549
+Epoch: [1][3260/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019706, lr_decoder: 0.019706, Accuracy: 41.95, Loss: 3.544448
+Epoch: [1][3280/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019705, lr_decoder: 0.019705, Accuracy: 41.98, Loss: 3.542981
+Epoch: [1][3300/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019703, lr_decoder: 0.019703, Accuracy: 41.98, Loss: 3.543056
+Epoch: [1][3320/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019701, lr_decoder: 0.019701, Accuracy: 42.01, Loss: 3.542382
+Epoch: [1][3340/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019699, lr_decoder: 0.019699, Accuracy: 42.02, Loss: 3.540093
+Epoch: [1][3360/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019697, lr_decoder: 0.019697, Accuracy: 42.04, Loss: 3.537349
+Epoch: [1][3380/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019696, lr_decoder: 0.019696, Accuracy: 42.09, Loss: 3.535017
+Epoch: [1][3400/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019694, lr_decoder: 0.019694, Accuracy: 42.15, Loss: 3.531525
+Epoch: [1][3420/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019692, lr_decoder: 0.019692, Accuracy: 42.17, Loss: 3.529991
+Epoch: [1][3440/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019690, lr_decoder: 0.019690, Accuracy: 42.20, Loss: 3.529106
+Epoch: [1][3460/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019688, lr_decoder: 0.019688, Accuracy: 42.26, Loss: 3.525034
+Epoch: [1][3480/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019687, lr_decoder: 0.019687, Accuracy: 42.29, Loss: 3.522047
+Epoch: [1][3500/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019685, lr_decoder: 0.019685, Accuracy: 42.36, Loss: 3.517617
+Epoch: [1][3520/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019683, lr_decoder: 0.019683, Accuracy: 42.40, Loss: 3.514986
+Epoch: [1][3540/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019681, lr_decoder: 0.019681, Accuracy: 42.43, Loss: 3.513535
+Epoch: [1][3560/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019679, lr_decoder: 0.019679, Accuracy: 42.41, Loss: 3.514760
+Epoch: [1][3580/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019678, lr_decoder: 0.019678, Accuracy: 42.42, Loss: 3.515239
+Epoch: [1][3600/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019676, lr_decoder: 0.019676, Accuracy: 42.39, Loss: 3.516791
+Epoch: [1][3620/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019674, lr_decoder: 0.019674, Accuracy: 42.37, Loss: 3.517765
+Epoch: [1][3640/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019672, lr_decoder: 0.019672, Accuracy: 42.35, Loss: 3.517979
+Epoch: [1][3660/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019670, lr_decoder: 0.019670, Accuracy: 42.37, Loss: 3.516885
+Epoch: [1][3680/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019668, lr_decoder: 0.019668, Accuracy: 42.38, Loss: 3.516682
+Epoch: [1][3700/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019667, lr_decoder: 0.019667, Accuracy: 42.40, Loss: 3.513643
+Epoch: [1][3720/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019665, lr_decoder: 0.019665, Accuracy: 42.46, Loss: 3.510092
+Epoch: [1][3740/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019663, lr_decoder: 0.019663, Accuracy: 42.43, Loss: 3.512364
+Epoch: [1][3760/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019661, lr_decoder: 0.019661, Accuracy: 42.49, Loss: 3.508492
+Epoch: [1][3780/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019659, lr_decoder: 0.019659, Accuracy: 42.54, Loss: 3.505397
+Epoch: [1][3800/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019658, lr_decoder: 0.019658, Accuracy: 42.56, Loss: 3.504318
+Epoch: [1][3820/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019656, lr_decoder: 0.019656, Accuracy: 42.55, Loss: 3.504457
+Epoch: [1][3840/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019654, lr_decoder: 0.019654, Accuracy: 42.56, Loss: 3.503919
+Epoch: [1][3860/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019652, lr_decoder: 0.019652, Accuracy: 42.57, Loss: 3.502532
+Epoch: [1][3880/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019650, lr_decoder: 0.019650, Accuracy: 42.61, Loss: 3.498907
+Epoch: [1][3900/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019649, lr_decoder: 0.019649, Accuracy: 42.63, Loss: 3.497531
+Epoch: [1][3920/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019647, lr_decoder: 0.019647, Accuracy: 42.65, Loss: 3.497036
+Epoch: [1][3940/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019645, lr_decoder: 0.019645, Accuracy: 42.69, Loss: 3.494937
+Epoch: [1][3960/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019643, lr_decoder: 0.019643, Accuracy: 42.71, Loss: 3.493166
+Epoch: [1][3980/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019641, lr_decoder: 0.019641, Accuracy: 42.72, Loss: 3.491508
+Epoch: [1][4000/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019640, lr_decoder: 0.019640, Accuracy: 42.73, Loss: 3.489278
+Epoch: [1][4020/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019638, lr_decoder: 0.019638, Accuracy: 42.76, Loss: 3.486672
+Epoch: [1][4040/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019636, lr_decoder: 0.019636, Accuracy: 42.81, Loss: 3.483855
+Epoch: [1][4060/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019634, lr_decoder: 0.019634, Accuracy: 42.85, Loss: 3.481906
+Epoch: [1][4080/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019632, lr_decoder: 0.019632, Accuracy: 42.87, Loss: 3.480783
+Epoch: [1][4100/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019631, lr_decoder: 0.019631, Accuracy: 42.90, Loss: 3.478986
+Epoch: [1][4120/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019629, lr_decoder: 0.019629, Accuracy: 42.95, Loss: 3.475288
+Epoch: [1][4140/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019627, lr_decoder: 0.019627, Accuracy: 42.95, Loss: 3.475006
+Epoch: [1][4160/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019625, lr_decoder: 0.019625, Accuracy: 42.97, Loss: 3.473451
+Epoch: [1][4180/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019623, lr_decoder: 0.019623, Accuracy: 43.02, Loss: 3.471230
+Epoch: [1][4200/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019622, lr_decoder: 0.019622, Accuracy: 43.04, Loss: 3.469709
+Epoch: [1][4220/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019620, lr_decoder: 0.019620, Accuracy: 43.04, Loss: 3.470633
+Epoch: [1][4240/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019618, lr_decoder: 0.019618, Accuracy: 43.09, Loss: 3.467185
+Epoch: [1][4260/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019616, lr_decoder: 0.019616, Accuracy: 43.10, Loss: 3.466774
+Epoch: [1][4280/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019614, lr_decoder: 0.019614, Accuracy: 43.11, Loss: 3.465288
+Epoch: [1][4300/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019613, lr_decoder: 0.019613, Accuracy: 43.14, Loss: 3.464322
+Epoch: [1][4320/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019611, lr_decoder: 0.019611, Accuracy: 43.18, Loss: 3.462724
+Epoch: [1][4340/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019609, lr_decoder: 0.019609, Accuracy: 43.20, Loss: 3.461597
+Epoch: [1][4360/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019607, lr_decoder: 0.019607, Accuracy: 43.21, Loss: 3.461833
+Epoch: [1][4380/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019605, lr_decoder: 0.019605, Accuracy: 43.25, Loss: 3.458358
+Epoch: [1][4400/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019604, lr_decoder: 0.019604, Accuracy: 43.29, Loss: 3.455873
+Epoch: [1][4420/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019602, lr_decoder: 0.019602, Accuracy: 43.30, Loss: 3.454460
+Epoch: [1][4440/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019600, lr_decoder: 0.019600, Accuracy: 43.33, Loss: 3.453053
+Epoch: [1][4460/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019598, lr_decoder: 0.019598, Accuracy: 43.36, Loss: 3.452025
+Epoch: [1][4480/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019596, lr_decoder: 0.019596, Accuracy: 43.38, Loss: 3.449898
+Epoch: [1][4500/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019595, lr_decoder: 0.019595, Accuracy: 43.40, Loss: 3.448113
+Epoch: [1][4520/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019593, lr_decoder: 0.019593, Accuracy: 43.46, Loss: 3.444645
+Epoch: [1][4540/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019591, lr_decoder: 0.019591, Accuracy: 43.46, Loss: 3.444685
+Epoch: [1][4560/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019589, lr_decoder: 0.019589, Accuracy: 43.47, Loss: 3.443526
+Epoch: [1][4580/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019587, lr_decoder: 0.019587, Accuracy: 43.46, Loss: 3.444198
+Epoch: [1][4600/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019586, lr_decoder: 0.019586, Accuracy: 43.47, Loss: 3.444333
+Epoch: [1][4620/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019584, lr_decoder: 0.019584, Accuracy: 43.51, Loss: 3.442086
+Epoch: [1][4640/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019582, lr_decoder: 0.019582, Accuracy: 43.56, Loss: 3.439185
+Epoch: [1][4660/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019580, lr_decoder: 0.019580, Accuracy: 43.58, Loss: 3.437290
+Epoch: [1][4680/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019578, lr_decoder: 0.019578, Accuracy: 43.58, Loss: 3.436964
+Epoch: [1][4700/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019576, lr_decoder: 0.019576, Accuracy: 43.61, Loss: 3.435310
+Epoch: [1][4720/5000], Time: 0.34, Data: 0.06, lr_encoder: 0.019575, lr_decoder: 0.019575, Accuracy: 43.63, Loss: 3.434184
+Traceback (most recent call last):
+  File "train.py", line 273, in <module>
+    main(cfg, gpus)
+  File "train.py", line 200, in main
+    train(segmentation_module, iterator_train, optimizers, history, epoch+1, cfg)
+  File "train.py", line 55, in train
+    ave_total_loss.update(loss.data.item())
+KeyboardInterrupt
