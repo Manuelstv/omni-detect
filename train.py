@@ -1,5 +1,6 @@
 # System libs
 import os
+import sys
 import time
 # import math
 import random
@@ -58,12 +59,12 @@ def train(segmentation_module, iterator, optimizers, history, epoch, cfg):
         # calculate accuracy, and display
         if i % cfg.TRAIN.disp_iter == 0:
             print('Epoch: [{}][{}/{}], Time: {:.2f}, Data: {:.2f}, '
-                  'lr_encoder: {:.6f}, lr_decoder: {:.6f}, '
-                  'Accuracy: {:4.2f}, Loss: {:.6f}'
-                  .format(epoch, i, cfg.TRAIN.epoch_iters,
-                          batch_time.average(), data_time.average(),
-                          cfg.TRAIN.running_lr_encoder, cfg.TRAIN.running_lr_decoder,
-                          ave_acc.average(), ave_total_loss.average()))
+                             'lr_encoder: {:.6f}, lr_decoder: {:.6f}, '
+                             'Accuracy: {:4.2f}, Loss: {:.6f}'
+                             .format(epoch, i, cfg.TRAIN.epoch_iters,
+                                     batch_time.average(), data_time.average(),
+                                     cfg.TRAIN.running_lr_encoder, cfg.TRAIN.running_lr_decoder,
+                                     ave_acc.average(), ave_total_loss.average()))
 
             fractional_epoch = epoch - 1 + 1. * i / cfg.TRAIN.epoch_iters
             history['train']['epoch'].append(fractional_epoch)
@@ -107,8 +108,10 @@ def group_weight(module):
             if m.bias is not None:
                 group_no_decay.append(m.bias)
 
-    assert len(list(module.parameters())) == len(group_decay) + len(group_no_decay)
-    groups = [dict(params=group_decay), dict(params=group_no_decay, weight_decay=.0)]
+    assert len(list(module.parameters())) == len(
+        group_decay) + len(group_no_decay)
+    groups = [dict(params=group_decay), dict(
+        params=group_no_decay, weight_decay=.0)]
     return groups
 
 
@@ -128,7 +131,8 @@ def create_optimizers(nets, cfg):
 
 
 def adjust_learning_rate(optimizers, cur_iter, cfg):
-    scale_running_lr = ((1. - float(cur_iter) / cfg.TRAIN.max_iters) ** cfg.TRAIN.lr_pow)
+    scale_running_lr = (
+        (1. - float(cur_iter) / cfg.TRAIN.max_iters) ** cfg.TRAIN.lr_pow)
     cfg.TRAIN.running_lr_encoder = cfg.TRAIN.lr_encoder * scale_running_lr
     cfg.TRAIN.running_lr_decoder = cfg.TRAIN.lr_decoder * scale_running_lr
 
@@ -197,7 +201,8 @@ def main(cfg, gpus):
     history = {'train': {'epoch': [], 'loss': [], 'acc': []}}
 
     for epoch in range(cfg.TRAIN.start_epoch, cfg.TRAIN.num_epoch):
-        train(segmentation_module, iterator_train, optimizers, history, epoch+1, cfg)
+        train(segmentation_module, iterator_train,
+              optimizers, history, epoch+1, cfg)
 
         # checkpointing
         checkpoint(nets, history, cfg, epoch+1)
@@ -254,7 +259,8 @@ if __name__ == '__main__':
         cfg.MODEL.weights_decoder = os.path.join(
             cfg.DIR, 'decoder_epoch_{}.pth'.format(cfg.TRAIN.start_epoch))
         assert os.path.exists(cfg.MODEL.weights_encoder) and \
-            os.path.exists(cfg.MODEL.weights_decoder), "checkpoint does not exitst!"
+            os.path.exists(
+                cfg.MODEL.weights_decoder), "checkpoint does not exitst!"
 
     # Parse gpu ids
     gpus = parse_devices(args.gpus)

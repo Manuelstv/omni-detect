@@ -43,8 +43,8 @@ class OmniSemSeg():
         # for idx, elt in enumerate(self.colors):
         #     print(self.names[idx+1],self.colors[idx])
 
-        self.model_sphe = self.model_builder("sphe")
-        # self.model_sphe = self.model_builder("persp")
+        # self.model_sphe = self.model_builder("sphe")
+        self.model_sphe = self.model_builder("persp")
         self.model_persp = self.model_builder("persp")
 
         self.datadir = datadir
@@ -77,17 +77,20 @@ class OmniSemSeg():
                 weights='ckpt/ade20k-resnet50dilated-ppm_deepsup/decoder_epoch_20.pth',
                 use_softmax=True)
         elif imode == "persp":
+            # encoder_epoch = 'ckpt/ade20k-resnet50dilated-ppm_deepsup/encoder_epoch_20.pth'
+            # decoder_epoch = 'ckpt/ade20k-resnet50dilated-ppm_deepsup/decoder_epoch_20.pth'
+            encoder_epoch = 'ckpt_nef/r50d_ppm_rot_e40_nef_30/encoder_epoch_40.pth'
+            decoder_epoch = 'ckpt_nef/r50d_ppm_rot_e40_nef_30/decoder_epoch_40.pth'
             net_encoder = seg_persp.ModelBuilder.build_encoder(
                 arch='resnet50dilated',
                 fc_dim=2048,
-                weights='ckpt/ade20k-resnet50dilated-ppm_deepsup/encoder_epoch_20.pth')
+                weights=encoder_epoch)
             net_decoder = seg_persp.ModelBuilder.build_decoder(
                 arch='ppm_deepsup',
                 fc_dim=2048,
                 num_class=150,
-                weights='ckpt/ade20k-resnet50dilated-ppm_deepsup/decoder_epoch_20.pth',
+                weights=decoder_epoch,
                 use_softmax=True)
-
 
         crit = torch.nn.NLLLoss(ignore_index=-1)
         semseg_model = SegmentationModule(net_encoder, net_decoder, crit)
@@ -108,8 +111,8 @@ class OmniSemSeg():
 
     def load_imgs(self):
         # list of images to process
-        # list_img = [self.datadir+file for file in sorted(os.listdir(self.datadir), key=lambda x:float(re.findall("(\d+)",x)[0])) if (file.endswith(self.ext))]
-        list_img = sorted([self.datadir+file for file in os.listdir(self.datadir) if (file.endswith(self.ext))], key=lambda f: int(f.rsplit("/", 1)[-1].rsplit("_",1)[0]))
+        list_img = [self.datadir+file for file in sorted(os.listdir(self.datadir), key=lambda x:float(re.findall("(\d+)",x)[0])) if (file.endswith(self.ext))]
+        # list_img = sorted([self.datadir+file for file in os.listdir(self.datadir) if (file.endswith(self.ext))], key=lambda f: int(f.rsplit("/", 1)[-1].rsplit("_",1)[0]))
         # print(list_img)
         return list_img
 
@@ -315,59 +318,59 @@ class OmniSemSeg():
         new_im.save(os.path.join(self.savedir, it+'.png'))
 
 
-    def merge_imgs(dir_result='/MERGED/'):
-        dir_name = './OUTPUT/'
-        os.makedirs(dir_name+dir_result, exist_ok=True)
-        list_folders = ['ALL_OFFSETS','DECODER_NO_OFFSETS','BOTTLENECK_OFFSETS','123_LAYER_OFFSETS','FIRST_LAYER_OFFSETS','ENCODER_NO_OFFSETS','NO_OFFSETS']
-        list_img_off = [dir_name+list_folders[0]+'/'+file for file in sorted(os.listdir(dir_name+list_folders[0])) if file.endswith('.png')]
-        #print(len(list_img_off))
-        for idx in range(len(list_img_off)):
-            first_img = PIL.Image.open(dir_name+list_folders[0]+'/'+str(idx)+'.png')
+    # def merge_imgs(dir_result='/MERGED/'):
+    #     dir_name = './OUTPUT/'
+    #     os.makedirs(dir_name+dir_result, exist_ok=True)
+    #     list_folders = ['ALL_OFFSETS','DECODER_NO_OFFSETS','BOTTLENECK_OFFSETS','123_LAYER_OFFSETS','FIRST_LAYER_OFFSETS','ENCODER_NO_OFFSETS','NO_OFFSETS']
+    #     list_img_off = [dir_name+list_folders[0]+'/'+file for file in sorted(os.listdir(dir_name+list_folders[0])) if file.endswith('.png')]
+    #     #print(len(list_img_off))
+    #     for idx in range(len(list_img_off)):
+    #         first_img = PIL.Image.open(dir_name+list_folders[0]+'/'+str(idx)+'.png')
 
-            new_im = PIL.Image.new('RGB', (first_img.size[0], int((len(list_folders)+1)/2*first_img.size[1])))
+    #         new_im = PIL.Image.new('RGB', (first_img.size[0], int((len(list_folders)+1)/2*first_img.size[1])))
 
-            for k in range(len(list_folders)):
-                #print(dir_name+list_folders[k]+'/'+str(idx)+'.png')
-                new_im.paste(PIL.Image.open(dir_name+list_folders[k]+'/'+str(idx)+'.png'),(0,int((len(list_folders)-k-1)/2*first_img.size[1])))
+    #         for k in range(len(list_folders)):
+    #             #print(dir_name+list_folders[k]+'/'+str(idx)+'.png')
+    #             new_im.paste(PIL.Image.open(dir_name+list_folders[k]+'/'+str(idx)+'.png'),(0,int((len(list_folders)-k-1)/2*first_img.size[1])))
 
-            im_draw = PIL.ImageDraw.Draw(new_im)
-            text_color = (0, 0, 0)
-            #fnt = PIL.ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 40)
-            fnt = PIL.ImageFont.truetype("/usr/share/fonts/liberation/LiberationSans-Regular.ttf", 40)
-            for k in range(len(list_folders)):
-                im_draw.text((int(first_img.size[0]/2),int((len(list_folders)-k)/2*first_img.size[1]+50)), str(list_folders[k]), text_color, font=fnt, anchor="ms")
+    #         im_draw = PIL.ImageDraw.Draw(new_im)
+    #         text_color = (0, 0, 0)
+    #         #fnt = PIL.ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 40)
+    #         fnt = PIL.ImageFont.truetype("/usr/share/fonts/liberation/LiberationSans-Regular.ttf", 40)
+    #         for k in range(len(list_folders)):
+    #             im_draw.text((int(first_img.size[0]/2),int((len(list_folders)-k)/2*first_img.size[1]+50)), str(list_folders[k]), text_color, font=fnt, anchor="ms")
 
-            new_im.save(os.path.join(dir_name+dir_result, str(idx)+'.png'))
-        print('FINI')
+    #         new_im.save(os.path.join(dir_name+dir_result, str(idx)+'.png'))
+    #     print('FINI')
 
 
 
-    def merge_imgs_v2(dir_result='/MERGED_2/'):
-        dir_name = './OUTPUT/'
-        os.makedirs(dir_name+dir_result, exist_ok=True)
-        list_folders = ['ALL_OFFSETS','DECODER_NO_OFFSETS','BOTTLENECK_OFFSETS','123_LAYER_OFFSETS','FIRST_LAYER_OFFSETS','ENCODER_NO_OFFSETS','NO_OFFSETS']
-        list_img_off = [dir_name+list_folders[0]+'/'+file for file in sorted(os.listdir(dir_name+list_folders[0])) if file.endswith('.png')]
-        #print(len(list_img_off))
-        for idx in range(len(list_img_off)):
-            first_img = PIL.Image.open(dir_name+list_folders[0]+'/'+str(idx)+'.png')
+    # def merge_imgs_v2(dir_result='/MERGED_2/'):
+    #     dir_name = './OUTPUT/'
+    #     os.makedirs(dir_name+dir_result, exist_ok=True)
+    #     list_folders = ['ALL_OFFSETS','DECODER_NO_OFFSETS','BOTTLENECK_OFFSETS','123_LAYER_OFFSETS','FIRST_LAYER_OFFSETS','ENCODER_NO_OFFSETS','NO_OFFSETS']
+    #     list_img_off = [dir_name+list_folders[0]+'/'+file for file in sorted(os.listdir(dir_name+list_folders[0])) if file.endswith('.png')]
+    #     #print(len(list_img_off))
+    #     for idx in range(len(list_img_off)):
+    #         first_img = PIL.Image.open(dir_name+list_folders[0]+'/'+str(idx)+'.png')
 
-            new_im = PIL.Image.new('RGB', (int(first_img.size[0]/2), int((len(list_folders)+1)/2*first_img.size[1])))
+    #         new_im = PIL.Image.new('RGB', (int(first_img.size[0]/2), int((len(list_folders)+1)/2*first_img.size[1])))
 
-            for k in range(len(list_folders)-1):
-                #print(dir_name+list_folders[k]+'/'+str(idx)+'.png')
-                new_im.paste(PIL.Image.open(dir_name+list_folders[k]+'/'+str(idx)+'.png'),(-int(first_img.size[0]/2),int((len(list_folders)-k-1)/2*first_img.size[1])))
+    #         for k in range(len(list_folders)-1):
+    #             #print(dir_name+list_folders[k]+'/'+str(idx)+'.png')
+    #             new_im.paste(PIL.Image.open(dir_name+list_folders[k]+'/'+str(idx)+'.png'),(-int(first_img.size[0]/2),int((len(list_folders)-k-1)/2*first_img.size[1])))
 
-            new_im.paste(PIL.Image.open(dir_name+list_folders[k]+'/'+str(idx)+'.png'),(0,0))
+    #         new_im.paste(PIL.Image.open(dir_name+list_folders[k]+'/'+str(idx)+'.png'),(0,0))
 
-            im_draw = PIL.ImageDraw.Draw(new_im)
-            text_color = (0, 0, 0)
-            #fnt = PIL.ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 40)
-            fnt = PIL.ImageFont.truetype("/usr/share/fonts/liberation/LiberationSans-Regular.ttf", 40)
-            for k in range(len(list_folders)):
-                im_draw.text((int(first_img.size[0]/4),int((len(list_folders)-k)/2*first_img.size[1]+50)), str(list_folders[k]), text_color, font=fnt, anchor="ms")
+    #         im_draw = PIL.ImageDraw.Draw(new_im)
+    #         text_color = (0, 0, 0)
+    #         #fnt = PIL.ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 40)
+    #         fnt = PIL.ImageFont.truetype("/usr/share/fonts/liberation/LiberationSans-Regular.ttf", 40)
+    #         for k in range(len(list_folders)):
+    #             im_draw.text((int(first_img.size[0]/4),int((len(list_folders)-k)/2*first_img.size[1]+50)), str(list_folders[k]), text_color, font=fnt, anchor="ms")
 
-            new_im.save(os.path.join(dir_name+dir_result, str(idx)+'.png'))
-        print('FINI')
+    #         new_im.save(os.path.join(dir_name+dir_result, str(idx)+'.png'))
+    #     print('FINI')
 
 
 
