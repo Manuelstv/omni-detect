@@ -34,7 +34,7 @@ class BaseDataset(torch.utils.data.Dataset):
         self.normalize = transforms.Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225])
-        self.rotate = transforms.RandomRotation(degrees=(-180,180))
+        self.rotate = transforms.RandomRotation(degrees=(-30,30))
 
     def parse_input_list(self, odgt, max_sample=-1, start_idx=-1, end_idx=-1):
         if isinstance(odgt, list):

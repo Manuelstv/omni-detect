@@ -19,7 +19,7 @@ MODEL:
 
 TRAIN:
   batch_size_per_gpu: 2
-  num_epoch: 30
+  num_epoch: 100
   start_epoch: 0
   epoch_iters: 5000
   optim: "SGD"
@@ -42,4 +42,4 @@ TEST:
   checkpoint: "epoch_30.pth"
   result: "./"
 
-DIR: "ckpt/ade20k-resnet50-upernet"
+DIR: "ckpt/r50_upp_rot_e100_nef_30"

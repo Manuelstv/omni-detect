@@ -56,9 +56,10 @@ def train(segmentation_module, iterator, optimizers, history, epoch, cfg):
         ave_total_loss.update(loss.data.item())
         ave_acc.update(acc.data.item()*100)
 
+        # sys.stderr.write("TOTO")
         # calculate accuracy, and display
         if i % cfg.TRAIN.disp_iter == 0:
-            print('Epoch: [{}][{}/{}], Time: {:.2f}, Data: {:.2f}, '
+            sys.stderr.write('Epoch: [{}][{}/{}], Time: {:.2f}, Data: {:.2f}, '
                              'lr_encoder: {:.6f}, lr_decoder: {:.6f}, '
                              'Accuracy: {:4.2f}, Loss: {:.6f}'
                              .format(epoch, i, cfg.TRAIN.epoch_iters,
