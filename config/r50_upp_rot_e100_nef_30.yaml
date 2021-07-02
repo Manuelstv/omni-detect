@@ -36,10 +36,10 @@ TRAIN:
 
 VAL:
   visualize: False
-  checkpoint: "epoch_100.pth"
+  checkpoint: "epoch_30.pth"
 
 TEST:
-  checkpoint: "epoch_100.pth"
+  checkpoint: "epoch_30.pth"
   result: "./"
 
 DIR: "ckpt/r50_upp_rot_e100_nef_30"
