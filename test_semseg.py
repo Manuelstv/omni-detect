@@ -43,8 +43,9 @@ class OmniSemSeg():
         # for idx, elt in enumerate(self.colors):
         #     print(self.names[idx+1],self.colors[idx])
 
-        # self.model_sphe = self.model_builder("sphe")
-        self.model_sphe = self.model_builder("persp")
+        self.model_sphe = self.model_builder("sphe")
+        print(self.model_sphe)
+        # self.model_sphe = self.model_builder("persp")
         self.model_persp = self.model_builder("persp")
 
         self.datadir = datadir
@@ -64,23 +65,23 @@ class OmniSemSeg():
                 self.names[int(row[0])] = row[5].split(";")[0]
 
     def model_builder(self, imode="sphe"):
+        encoder_epoch = 'ckpt/ade20k-resnet50dilated-ppm_deepsup/encoder_epoch_20.pth'
+        decoder_epoch = 'ckpt/ade20k-resnet50dilated-ppm_deepsup/decoder_epoch_20.pth'
+        # encoder_epoch = 'ckpt_nef/r50d_ppm_rot_e40_nef_30/encoder_epoch_40.pth'
+        # decoder_epoch = 'ckpt_nef/r50d_ppm_rot_e40_nef_30/decoder_epoch_40.pth'
         if imode == "sphe":
             # Network Builders
             net_encoder = seg_sphe.ModelBuilder.build_encoder(
                 arch='resnet50dilated',
                 fc_dim=2048,
-                weights='ckpt/ade20k-resnet50dilated-ppm_deepsup/encoder_epoch_20.pth')
+                weights=encoder_epoch)
             net_decoder = seg_sphe.ModelBuilder.build_decoder(
                 arch='ppm_deepsup',
                 fc_dim=2048,
                 num_class=150,
-                weights='ckpt/ade20k-resnet50dilated-ppm_deepsup/decoder_epoch_20.pth',
+                weights=decoder_epoch,
                 use_softmax=True)
         elif imode == "persp":
-            # encoder_epoch = 'ckpt/ade20k-resnet50dilated-ppm_deepsup/encoder_epoch_20.pth'
-            # decoder_epoch = 'ckpt/ade20k-resnet50dilated-ppm_deepsup/decoder_epoch_20.pth'
-            encoder_epoch = 'ckpt_nef/r50d_ppm_rot_e40_nef_30/encoder_epoch_40.pth'
-            decoder_epoch = 'ckpt_nef/r50d_ppm_rot_e40_nef_30/decoder_epoch_40.pth'
             net_encoder = seg_persp.ModelBuilder.build_encoder(
                 arch='resnet50dilated',
                 fc_dim=2048,
@@ -241,8 +242,8 @@ class OmniSemSeg():
         new_im.paste(img_final,(0,img_final.size[1]))
 
         os.makedirs(self.savedir, exist_ok=True)
-        print(it)
-        print(img_orig)
+        # print(it)
+        # print(img_orig)
         new_im.save(os.path.join(self.savedir, it+'.png'))
 
         # numpy.savetxt(os.path.join(self.savedir, it+'_sphe.csv'),pred_sphe, delimiter=',')
@@ -525,7 +526,8 @@ def iou_mean(pred, target, n_classes = 1):
 def main():
     """Run main function"""
 
-
+    global layers_act 
+    layers_act = [1,1,1,1,1]
 
     OSS = OmniSemSeg(DATADIR, SAVEDIR)
 
@@ -557,7 +559,7 @@ def main():
         semseg_metric_persp = semseg_metric()
         semseg_metric_sphe = semseg_metric()
 
-        for elt in OSS.list_img[0:100]:
+        for elt in OSS.list_img[0:2]:
 
 
             semseg_gt_file = elt.replace("_0.png","_2.png")
@@ -609,4 +611,5 @@ if __name__ == '__main__':
     IMODE = args.mode
     VERBOSE = args.VERBOSE is not None
     main()
+    
 
