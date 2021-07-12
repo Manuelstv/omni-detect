@@ -5,6 +5,8 @@ from mit_semseg.lib.nn import SynchronizedBatchNorm2d
 BatchNorm2d = SynchronizedBatchNorm2d
 import torchvision
 
+import test_semseg as tsg
+
 class SegmentationModuleBase(nn.Module):
     def __init__(self):
         super(SegmentationModuleBase, self).__init__()
@@ -256,10 +258,11 @@ class ResnetDilated(nn.Module):
     def _nostride_dilate(self, m, dilate):
         classname = m.__class__.__name__
         if classname.find('Conv') != -1:
-            print("Warning dilation")
             # the convolution with stride
             if m.stride == (2, 2):
+                # print(m)
                 m.stride = (1, 1)
+                # print(m)
                 if m.kernel_size == (3, 3):
                     m.dilation = (dilate//2, dilate//2)
                     m.padding = (dilate//2, dilate//2)
@@ -269,30 +272,31 @@ class ResnetDilated(nn.Module):
                     m.dilation = (dilate, dilate)
                     m.padding = (dilate, dilate)
 
+    def func_conv_deform(self, x, loc_layer, k, s, layers_act_num, offset_file = ''):
+        # print(loc_layer)
+        if offset_file == '':
+            offset_file = './OFFSETS/offset_'+str(int(x.shape[3]/s))+'_'+str(int(x.shape[2]/s))+'_'+str(k)+'_'+str(k)+'_'+str(s)+'_'+str(s)+'_1.pt'
+        if tsg.layers_act[layers_act_num] :
+            offset = torch.load(offset_file).cuda()
+        else:
+            offset = torch.zeros(1,2*k*k,int(x.shape[2]/s),int(x.shape[3]/s)).cuda()
+        offset.require_gradient = False
+        y = loc_layer(x,offset)
+        del offset
+        torch.cuda.empty_cache()
+        return y
+
     def forward(self, x, return_feature_maps=False):
         conv_out = []
         
-        #offset1 = torch.zeros(1,2*3*3,int(x.shape[2]/2),int(x.shape[3]/2)).cuda()
-        offset1 = torch.load('./OFFSETS/offset_'+str(int(x.shape[3]/2))+'_'+str(int(x.shape[2]/2))+'_3_3_2_2_1.pt').cuda()
-        offset1.require_gradient = False
-        x = self.relu1(self.bn1(self.conv1(x,offset1)))
-        del offset1
-        torch.cuda.empty_cache()
+        y = self.func_conv_deform(x, self.conv1, 3, 2, 0, '')
+        x = self.relu1(self.bn1(y))
         
-        #offset2 = torch.zeros(1,2*3*3,int(x.shape[2]),int(x.shape[3])).cuda()
-        offset2 = torch.load('./OFFSETS/offset_'+str(int(x.shape[3]))+'_'+str(int(x.shape[2]))+'_3_3_1_1_1.pt').cuda()
-        offset2.require_gradient = False        
-        x = self.relu2(self.bn2(self.conv2(x,offset2)))
-        del offset2
-        torch.cuda.empty_cache()
-        
-        #offset3 = torch.zeros(1,2*3*3,int(x.shape[2]),int(x.shape[3])).cuda()
-        offset3 = torch.load('./OFFSETS/offset_'+str(int(x.shape[3]))+'_'+str(int(x.shape[2]))+'_3_3_1_1_1.pt').cuda()
-        offset3.require_gradient = False        
-        x = self.relu3(self.bn3(self.conv3(x,offset3)))
-        del offset3
-        torch.cuda.empty_cache()
-        
+        y = self.func_conv_deform(x, self.conv2, 3, 1, 1, '')
+        x = self.relu2(self.bn2(y))
+
+        y = self.func_conv_deform(x, self.conv3, 3, 1, 2, '')
+        x = self.relu3(self.bn3(y))        
         
         x = self.maxpool(x)
 
@@ -502,6 +506,20 @@ class PPMDeepsup(nn.Module):
         self.conv_last_deepsup = nn.Conv2d(fc_dim // 4, num_class, 1, 1, 0)
         self.dropout_deepsup = nn.Dropout2d(0.1)
 
+    def func_conv_deform(self, x, loc_layer, k, s, layers_act_num, offset_file = ''):
+        # print(loc_layer)
+        if offset_file == '':
+            offset_file = './OFFSETS/offset_'+str(int(x.shape[3]/s))+'_'+str(int(x.shape[2]/s))+'_'+str(k)+'_'+str(k)+'_'+str(s)+'_'+str(s)+'_1.pt'
+        if tsg.layers_act[layers_act_num] :
+            offset = torch.load(offset_file).cuda()
+        else:
+            offset = torch.zeros(1,2*k*k,int(x.shape[2]/s),int(x.shape[3]/s)).cuda()
+        offset.require_gradient = False
+        y = loc_layer(x,offset)
+        del offset
+        torch.cuda.empty_cache()
+        return y
+
     def forward(self, conv_out, segSize=None):
         conv5 = conv_out[-1]
 
@@ -514,15 +532,7 @@ class PPMDeepsup(nn.Module):
                 mode='bilinear', align_corners=False))
         ppm_out = torch.cat(ppm_out, 1)
 
-        
-        #offset2 = torch.zeros(1,2*3*3,int(ppm_out.shape[2]),int(ppm_out.shape[3])).cuda()
-        offset2 = torch.load('./OFFSETS/offset_'+str(ppm_out.shape[3])+'_'+str(ppm_out.shape[2])+'_3_3_1_1_1.pt').cuda()
-        #print('Loading: '+'./OFFSETS/offset_'+str(ppm_out.shape[3])+'_'+str(ppm_out.shape[2])+'_3_3_1_1_1.pt')
-        offset2.require_gradient = False
-        x = self.conv_last(ppm_out,offset2)
-        del offset2
-        torch.cuda.empty_cache()        
-        
+        x = self.func_conv_deform(ppm_out, self.conv_last, 3, 1, -1, offset_file = '')        
 
         if self.use_softmax:  # is True during inference
             x = nn.functional.interpolate(
@@ -533,21 +543,16 @@ class PPMDeepsup(nn.Module):
         # deep sup
         conv4 = conv_out[-2]
         
-        #offset1 = torch.zeros(1,2*3*3,int(conv4.shape[2]),int(conv4.shape[3])).cuda()
-        offset1 = torch.load('./OFFSETS/offset_'+str(conv4.shape[3])+'_'+str(conv4.shape[2])+'_3_3_1_1_1.pt').cuda()
-        offset1.require_gradient = False
-        _ = self.cbr_deepsup(conv4,offset1)
-        del offset1
-        torch.cuda.empty_cache()
         
+        y =self.func_conv_deform(conv4, self.cbr_deepsup, 3, 1, -2, offset_file = '')      
         
-        _ = self.dropout_deepsup(_)
-        _ = self.conv_last_deepsup(_)
+        y = self.dropout_deepsup(y)
+        y = self.conv_last_deepsup(y)
 
         x = nn.functional.log_softmax(x, dim=1)
-        _ = nn.functional.log_softmax(_, dim=1)
+        y = nn.functional.log_softmax(y, dim=1)
 
-        return (x, _)
+        return (x, y)
 
 
 # upernet

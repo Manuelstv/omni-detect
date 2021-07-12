@@ -6,6 +6,7 @@ from mit_semseg.lib.nn import SynchronizedBatchNorm2d
 BatchNorm2d = SynchronizedBatchNorm2d
 import torchvision
 
+import test_semseg as tsg
 
 __all__ = ['ResNet', 'resnet18', 'resnet50', 'resnet101'] # resnet101 is coming soon!
 
@@ -82,6 +83,20 @@ class Bottleneck(nn.Module):
         self.downsample = downsample
         self.stride = stride
 
+    def func_conv_deform(self, x, loc_layer, k, s, layers_act_num, offset_file = ''):
+        # print(loc_layer)
+        if offset_file == '':
+            offset_file = './OFFSETS/offset_'+str(int(x.shape[3]/s))+'_'+str(int(x.shape[2]/s))+'_'+str(k)+'_'+str(k)+'_'+str(s)+'_'+str(s)+'_1.pt'
+        if tsg.layers_act[layers_act_num] :
+            offset = torch.load(offset_file).cuda()
+        else:
+            offset = torch.zeros(1,2*k*k,int(x.shape[2]/s),int(x.shape[3]/s)).cuda()
+        offset.require_gradient = False
+        y = loc_layer(x,offset)
+        del offset
+        torch.cuda.empty_cache()
+        return y
+
     def forward(self, x):
         residual = x
 
@@ -89,17 +104,7 @@ class Bottleneck(nn.Module):
         out = self.bn1(out)
         out = self.relu(out)
 
-        if self.conv2.stride[0] == 2:
-            #offset1 = torch.zeros(1,2*3*3,int(out.shape[2]/2+1),int(out.shape[3]/2)).cuda()
-            #print("Stride 2")      
-            offset1 = torch.load('./OFFSETS/offset_'+str(int(out.shape[3]/2))+'_'+str(int(out.shape[2]/2+1))+'_3_3_2_2_1.pt').cuda()
-        else:
-            #offset1 = torch.zeros(1,2*3*3,int(x.shape[2]),int(x.shape[3])).cuda()
-            offset1 = torch.load('./OFFSETS/offset_'+str(out.shape[3])+'_'+str(out.shape[2])+'_3_3_1_1_1.pt').cuda()
-        offset1.require_gradient = False
-        out = self.conv2(out,offset1)
-        del offset1
-        torch.cuda.empty_cache()
+        out = self.func_conv_deform(out, self.conv2, 3, self.conv2.stride[0], 3, '')
         
         out = self.bn2(out)
         out = self.relu(out)
@@ -141,7 +146,7 @@ class ResNet(nn.Module):
 
         for m in self.modules():
             if isinstance(m, torchvision.ops.DeformConv2d):
-                print("Warning m")
+                # print("Warning m")
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                 m.weight.data.normal_(0, math.sqrt(2. / n))
             elif isinstance(m, BatchNorm2d):

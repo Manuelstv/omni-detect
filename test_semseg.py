@@ -14,7 +14,12 @@ import mit_semseg.models as seg_persp
 from mit_semseg.models import SegmentationModule
 from mit_semseg.utils import colorEncode
 
+from torchviz import make_dot
+import hiddenlayer as hl
 #from tensorflow.keras.metrics import MeanIoU
+
+global layers_act 
+layers_act = [True,True,True,True,True,True]
 
 class OmniSemSeg():
     def __init__(self, datadir, savedir):
@@ -44,9 +49,13 @@ class OmniSemSeg():
         #     print(self.names[idx+1],self.colors[idx])
 
         self.model_sphe = self.model_builder("sphe")
-        print(self.model_sphe)
+        # x = torch.zeros([1,3,64,64])
+        # y = self.model_sphe(x)
+        # make_dot(y.mean(), params=dict(self.model_sphe.named_parameters()))
+        # print(self.model_sphe)
         # self.model_sphe = self.model_builder("persp")
         self.model_persp = self.model_builder("persp")
+        # print(self.model_persp)
 
         self.datadir = datadir
         self.ext = "_0.png"
@@ -112,8 +121,8 @@ class OmniSemSeg():
 
     def load_imgs(self):
         # list of images to process
-        list_img = [self.datadir+file for file in sorted(os.listdir(self.datadir), key=lambda x:float(re.findall("(\d+)",x)[0])) if (file.endswith(self.ext))]
-        # list_img = sorted([self.datadir+file for file in os.listdir(self.datadir) if (file.endswith(self.ext))], key=lambda f: int(f.rsplit("/", 1)[-1].rsplit("_",1)[0]))
+        # list_img = [self.datadir+file for file in sorted(os.listdir(self.datadir), key=lambda x:float(re.findall("(\d+)",x)[0])) if (file.endswith(self.ext))]
+        list_img = sorted([self.datadir+file for file in os.listdir(self.datadir) if (file.endswith(self.ext))], key=lambda f: int(f.rsplit("/", 1)[-1].rsplit("_",1)[0]))
         # print(list_img)
         return list_img
 
@@ -130,6 +139,11 @@ class OmniSemSeg():
         # Run the segmentation at the highest resolution.
         with torch.no_grad():
             scores_sphe = self.model_sphe(singleton_batch, segSize=output_size)
+            # hl.build_graph(self.model_sphe, singleton_batch)
+            # dot = make_dot(scores_sphe.mean(), params=dict(self.model_sphe.named_parameters()))
+            # dot.format = 'png'
+            # dot.render("net_semseg")
+            # sys.exit()
 
         # Get the predicted scores for each pixel
         _, pred_sphe = torch.max(scores_sphe, dim=1)
@@ -526,8 +540,7 @@ def iou_mean(pred, target, n_classes = 1):
 def main():
     """Run main function"""
 
-    global layers_act 
-    layers_act = [1,1,1,1,1]
+    # layers_act = [True,True,True,True,True]
 
     OSS = OmniSemSeg(DATADIR, SAVEDIR)
 
@@ -559,7 +572,7 @@ def main():
         semseg_metric_persp = semseg_metric()
         semseg_metric_sphe = semseg_metric()
 
-        for elt in OSS.list_img[0:2]:
+        for elt in OSS.list_img:
 
 
             semseg_gt_file = elt.replace("_0.png","_2.png")
