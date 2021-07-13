@@ -14,8 +14,8 @@ import mit_semseg.models as seg_persp
 from mit_semseg.models import SegmentationModule
 from mit_semseg.utils import colorEncode
 
-from torchviz import make_dot
-import hiddenlayer as hl
+#from torchviz import make_dot
+#import hiddenlayer as hl
 #from tensorflow.keras.metrics import MeanIoU
 
 global layers_act 
