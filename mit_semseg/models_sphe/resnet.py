@@ -90,7 +90,10 @@ class Bottleneck(nn.Module):
         if tsg.layers_act[layers_act_num] :
             offset = torch.load(offset_file).cuda()
         else:
-            offset = torch.zeros(1,2*k*k,int(x.shape[2]/s),int(x.shape[3]/s)).cuda()
+            if loc_layer.stride[0] == 2:
+                offset = torch.zeros(1,2*k*k,int(x.shape[2]/s+1),int(x.shape[3]/s)).cuda()
+            else:
+                offset = torch.zeros(1,2*k*k,int(x.shape[2]/s),int(x.shape[3]/s)).cuda()
         offset.require_gradient = False
         y = loc_layer(x,offset)
         del offset

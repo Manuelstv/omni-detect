@@ -19,7 +19,7 @@ import hiddenlayer as hl
 #from tensorflow.keras.metrics import MeanIoU
 
 global layers_act 
-layers_act = [True,True,True,True,True,True]
+layers_act = [False,False,False,False,False,False]
 
 class OmniSemSeg():
     def __init__(self, datadir, savedir):
