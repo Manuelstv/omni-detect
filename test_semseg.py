@@ -19,7 +19,7 @@ from mit_semseg.utils import colorEncode
 #from tensorflow.keras.metrics import MeanIoU
 
 global layers_act 
-layers_act = [False,False,False,False,False,False]
+layers_act = [False,False,False,True,False,False]
 
 class OmniSemSeg():
     def __init__(self, datadir, savedir):

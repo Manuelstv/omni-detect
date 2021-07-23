@@ -70,8 +70,9 @@ class BasicBlock(nn.Module):
 class Bottleneck(nn.Module):
     expansion = 4
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, num_l=0):
         super(Bottleneck, self).__init__()
+        self.num_l = num_l
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = BatchNorm2d(planes)
         #self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
@@ -84,10 +85,12 @@ class Bottleneck(nn.Module):
         self.stride = stride
 
     def func_conv_deform(self, x, loc_layer, k, s, layers_act_num, offset_file = ''):
-        # print(loc_layer)
+#        print(self.num_l)
+#        print(loc_layer)
         if offset_file == '':
             offset_file = './OFFSETS/offset_'+str(int(x.shape[3]/s))+'_'+str(int(x.shape[2]/s))+'_'+str(k)+'_'+str(k)+'_'+str(s)+'_'+str(s)+'_1.pt'
-        if tsg.layers_act[layers_act_num] :
+        if tsg.layers_act[layers_act_num] and self.num_l==72:
+            print(loc_layer)
             offset = torch.load(offset_file).cuda()
         else:
             if loc_layer.stride[0] == 2:
@@ -166,10 +169,10 @@ class ResNet(nn.Module):
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample))
+        layers.append(block(self.inplanes, planes, stride, downsample, 0+(planes/64-1)*10))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
-            layers.append(block(self.inplanes, planes))
+            layers.append(block(self.inplanes, planes, num_l=i+(planes/64-1)*10))
 
         return nn.Sequential(*layers)
 
