@@ -8,7 +8,7 @@ pretrained/
 data/ADEChallengeData2016/
 OUTPUT/
 notebooks/
-
+SEMSEG_ENV/
 
 .ipynb_checkpoints
 
