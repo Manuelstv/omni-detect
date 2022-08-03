@@ -9,6 +9,7 @@ data/ADEChallengeData2016/
 OUTPUT/
 notebooks/
 SEMSEG_ENV/
+SEMSEG_ENV2/
 
 .ipynb_checkpoints
 
