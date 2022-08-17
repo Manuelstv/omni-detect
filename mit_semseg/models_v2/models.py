@@ -62,7 +62,7 @@ class ModelBuilder:
     @staticmethod
     def weights_init(m):
         classname = m.__class__.__name__
-        if classname.find('Conv') != -1:
+        if classname.find('Conv') != -1 or classname.find('DeformConv2d_sphe2') != -1:
             nn.init.kaiming_normal_(m.weight.data)
         elif classname.find('BatchNorm') != -1:
             m.weight.data.fill_(1.)
@@ -264,7 +264,7 @@ class ResnetDilated(nn.Module):
 
     def _nostride_dilate(self, m, dilate):
         classname = m.__class__.__name__
-        if classname.find('Conv') != -1:
+        if classname.find('Conv') != -1 or classname.find('DeformConv2d_sphe2') != -1:
             # the convolution with stride
             if m.stride == (2, 2):
                 m.stride = (1, 1)

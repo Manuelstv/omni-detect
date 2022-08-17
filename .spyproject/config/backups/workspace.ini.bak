@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['test_semseg_v2.py', 'train.py', 'mit_semseg/models_v2/resnet.py', 'mit_semseg/models_v2/models.py', 'mit_semseg/models_v2/DeformConv2d_sphe.py']
+recent_files = ['test_semseg_v2.py', 'train.py', 'mit_semseg/models_v2/resnet.py', 'mit_semseg/models_v2/models.py', 'mit_semseg/models_v2/DeformConv2d_sphe.py', 'mit_semseg/models_v2/create_offset_tensor.py', 'mit_semseg/utils.py', 'mit_semseg/utils_v2.py']
 
 [main]
 version = 0.2.0

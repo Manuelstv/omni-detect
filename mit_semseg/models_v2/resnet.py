@@ -61,14 +61,16 @@ class BasicBlock(nn.Module):
 class Bottleneck(nn.Module):
     expansion = 4
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, spheactiv=False):
         super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
-                                padding=1, bias=False)
-        # self.conv2 = DeformConv2d_sphe2(planes, planes, kernel_size=3, stride=stride,
-        #                                 padding=1, bias=False)
+        if spheactiv:
+            self.conv2 = DeformConv2d_sphe2(planes, planes, kernel_size=3, stride=stride,
+                                            padding=1, bias=False)
+        else:
+            self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
+                                   padding=1, bias=False)
         self.bn2 = BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = BatchNorm2d(planes * 4)
@@ -104,7 +106,7 @@ class ResNet(nn.Module):
     def __init__(self, block, layers, num_classes=1000, spheactiv=False):
         self.inplanes = 128
         super(ResNet, self).__init__()
-        self.conv1 = conv3x3(3, 64, stride=2, spheactiv=False)
+        self.conv1 = conv3x3(3, 64, stride=2, spheactiv=True)
         self.bn1 = BatchNorm2d(64)
         self.relu1 = nn.ReLU(inplace=True)
         self.conv2 = conv3x3(64, 64, spheactiv=False)
@@ -115,10 +117,10 @@ class ResNet(nn.Module):
         self.relu3 = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
-        self.layer1 = self._make_layer(block, 64, layers[0])
-        self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        self.layer1 = self._make_layer(block, 64, layers[0], spheactiv_block=False, speactiv_depth=10)
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2, spheactiv_block=False, speactiv_depth=10)
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2, spheactiv_block=False, speactiv_depth=10)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=False, speactiv_depth=2)
         self.avgpool = nn.AvgPool2d(7, stride=1)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
@@ -130,7 +132,7 @@ class ResNet(nn.Module):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
 
-    def _make_layer(self, block, planes, blocks, stride=1):
+    def _make_layer(self, block, planes, blocks, stride=1, spheactiv_block=False, speactiv_depth=0):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
@@ -140,10 +142,17 @@ class ResNet(nn.Module):
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample))
+        if spheactiv_block:
+            layers.append(block(self.inplanes, planes, stride, downsample=downsample, spheactiv=True))
+        else:
+            layers.append(block(self.inplanes, planes, stride, downsample))
+
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
-            layers.append(block(self.inplanes, planes))
+            if i >= speactiv_depth:
+                layers.append(block(self.inplanes, planes, spheactiv=True))
+            else:
+                layers.append(block(self.inplanes, planes))
 
         return nn.Sequential(*layers)
 

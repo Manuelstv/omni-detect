@@ -43,17 +43,18 @@ id_trees = 4
 id_earth = 13
 id_sky = 2
 
-# id_ground = 91
-# id_path = 52
+id_ground = 94
+id_path = 52
+id_mountain = 16
+id_dirt = 91
+id_hill = 68
 
-# id_plants = 17
-# id_mountain = 16
-# id_canopy = 106
+id_plants = 17
+id_canopy = 106
 
 nb_classes_in_dataset = 150
-model_version = "semseg_baseline"
+model_version = "semseg_baseline_fusedclasses_RICOH"
 top_half = False
-
 
 PARSER = argparse.ArgumentParser()
 PARSER.add_argument('-d', '--datadir',
@@ -73,6 +74,11 @@ PARSER.add_argument('-m', '--mode',
                     type=str,
                     default='test',
                     help='Mode of execution test or eval vs GT.')
+PARSER.add_argument('-th', '--top_half',
+                    nargs='?',
+                    type=bool,
+                    default=False,
+                    help='Remove top bottom of images for metrics.')
 PARSER.add_argument('-v', '--VERBOSE',
                     nargs='*',
                     action='store',
@@ -159,14 +165,14 @@ class OmniSemSeg():
         #     print(self.names[idx+1],self.colors[idx])
 
         self.model_sphe = self.model_builder("sphe")
-        # print(self.model_sphe)
+        print(self.model_sphe)
 
         self.model_persp = self.model_builder("persp")
         # print(self.model_persp)
 
         # self.datadir = os.path.join(datadir, "INPUT/")
-        self.datadir = os.path.join(datadir, "INPUT_SSHORT/")
-        # self.datadir = os.path.join(datadir, "images/")
+        # self.datadir = os.path.join(datadir, "INPUT_SSHORT/")
+        self.datadir = os.path.join(datadir, "images/")
         self.ext = "_rgb.png"
 
         self.list_img = self.load_imgs()
@@ -249,12 +255,21 @@ class OmniSemSeg():
         # Run the segmentation at the highest resolution.
         with torch.no_grad():
             scores_seg = self.model_persp(singleton_batch, segSize=output_size)
+            # scores_seg = self.model_sphe(singleton_batch, segSize=output_size)
 
         # Get the predicted scores for each pixel
         _, pred_seg = torch.max(scores_seg, dim=1)
         pred_seg = pred_seg.cpu()[0].numpy()
 
-        # pred_seg[pred_seg == id_path] = id_earth
+        # To fuse classes of objects
+        pred_seg[pred_seg == id_path] = id_earth
+        pred_seg[pred_seg == id_dirt] = id_earth
+        pred_seg[pred_seg == id_mountain] = id_earth
+        pred_seg[pred_seg == id_ground] = id_earth
+        pred_seg[pred_seg == id_hill] = id_earth
+
+        pred_seg[pred_seg == id_plants] = id_trees
+        pred_seg[pred_seg == id_canopy] = id_trees
 
         return pred_seg
 
@@ -732,14 +747,23 @@ def main():
             # OSS.save_all(elt, pred_persp, pred_sphe)
             OSS.save_all_2_nogt(elt, pred_persp, pred_sphe, model_version)
 
+    elif IMODE == "infer":
+
+        for elt in OSS.list_img:
+            torch.cuda.synchronize()
+
+            print("Doing for ", str(elt))
+            pred_seg = OSS.semseg_single_pred(elt)
+            OSS.save_single_nogt(elt, pred_seg, model_version)
+            # print(numpy.unique(pred_seg, return_counts=True))
+
     elif IMODE == "eval":
 
         nb_classes_in_dataset = 150
 
-        iou_vector, acc_list, giou_list, iou_list = init_metrics(nb_classes_in_dataset)
-
         iou_glob_list = np.empty(5)
         iou_loc_list = np.empty(5)
+        list_elt = np.array([])
 
         semseg_metric_glob = semseg_metric()
 
@@ -770,26 +794,12 @@ def main():
 
             pred_seg_tmp = pred_seg
             semseg_gt_id_tmp = semseg_gt_id
-            if top_half:
+            if TOP_HALF:
                 print("CAREFUL TOP HALF REDUCTION IS ACTIV!!")
                 half_height = int(pred_seg_tmp.shape[0] / 2)
                 # print(half_height)
                 pred_seg_tmp = pred_seg_tmp[:half_height, :]
                 semseg_gt_id_tmp = semseg_gt_id_tmp[:half_height, :]
-
-            # iou_vector, acc_list, giou_list, iou_list = update_metrics(semseg_gt_id_tmp, pred_seg_tmp, iou_vector, acc_list, giou_list, iou_list)
-            # print(iou_list[1:, :])
-            # print(giou_list[1:, :])
-
-            # global_accuracy_v2, class_accuracies_v2, prec_v2, rec_v2, f1_v2, miou_v2 = u_v2.evaluate_segmentation(semseg_gt_id_tmp, pred_seg_tmp, 150, score_averaging=None)
-            # tmp_vector_v2 = [global_accuracy_v2, global_accuracy_v2, prec_v2, rec_v2, f1_v2, miou_v2]
-            # tmp_vector_iou_v2 = [class_accuracies_v2[id_trees], class_accuracies_v2[id_earth], class_accuracies_v2[id_sky]]
-            # # print(tmp_vector_v2)
-            # print(global_accuracy_v2, tmp_vector_iou_v2)
-            # print(class_accuracies_v2)
-            # print(miou_v2, np.mean(class_accuracies_v2))
-            # miou_list_v2 = np.vstack((tmp_vector_v2, miou_list_v2))
-            # iou_list_v2 = np.vstack((tmp_vector_iou_v2, iou_list_v2))
 
             acc = np.mean((pred_seg_tmp == semseg_gt_id_tmp))
 
@@ -803,17 +813,19 @@ def main():
             iou_loc = semseg_metric_loc.get_iou()
             tmp_iou_loc_vector = [semseg_metric_loc.get_miou(), iou_loc[id_trees], iou_loc[id_earth], iou_loc[id_sky], acc]
             iou_loc_list = np.vstack((iou_loc_list, tmp_iou_loc_vector))
+            list_elt = np.append(list_elt, str(elt))
 
-        semseg_metric_glob.show_metrics()
+        # semseg_metric_glob.show_metrics()
         iou_glob_list = iou_glob_list[1:, :]
         iou_loc_list = iou_loc_list[1:, :]
-        print("FROM LOC, MIOU : {}, iou trees: {}, iou ground: {}, iou sky: {}, Acc : {}".format(np.mean(iou_loc_list[:, 0]), np.mean(
-            iou_loc_list[:, 1]), np.mean(iou_loc_list[:, 2]), np.mean(iou_loc_list[:, 3]), np.mean(iou_loc_list[:, -1])))
-        print("FROM LOC, MIOU : {}, iou trees: {}, iou ground: {}, iou sky: {}, Acc : {}".format(
+        print("FROM GLOB MIOU {} iou_trees {} iou_ground {} iou_sky {} Acc {}".format(
             iou_glob_list[-1, 0], iou_glob_list[-1, 1], iou_glob_list[-1, 2], iou_glob_list[-1, 3], np.mean(iou_glob_list[:, -1])))
+        print("FROM LOC MIOU {} iou_trees {} iou_ground {} iou_sky {} Acc {}".format(np.mean(iou_loc_list[:, 0]), np.mean(
+            iou_loc_list[:, 1]), np.mean(iou_loc_list[:, 2]), np.mean(iou_loc_list[:, 3]), np.mean(iou_loc_list[:, -1])))
 
         np.savetxt(os.path.join(OSS.savedir, model_version) + "/iou_glob_list.csv", iou_glob_list, delimiter=",")
         np.savetxt(os.path.join(OSS.savedir, model_version) + "/iou_loc_list.csv", iou_loc_list, delimiter=",")
+        np.savetxt(os.path.join(OSS.savedir, model_version) + "/list_elt.csv", list_elt, delimiter=",", newline="\n", fmt="%s")
         # np.savetxt(os.path.join(OSS.savedir, model_version) + "/miou_list_v2.csv", miou_list_v2[1:, :], delimiter=",")
         # np.savetxt(os.path.join(OSS.savedir, model_version) + "/iou_list_v2.csv", iou_list_v2[1:, :], delimiter=",")
 
@@ -902,5 +914,6 @@ if __name__ == '__main__':
     DATADIR = args.datadir
     SAVEDIR = args.savedir
     IMODE = args.mode
+    TOP_HALF = args.top_half
     VERBOSE = args.VERBOSE is not None
     main()
