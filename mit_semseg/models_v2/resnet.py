@@ -107,6 +107,7 @@ class ResNet(nn.Module):
         self.inplanes = 128
         super(ResNet, self).__init__()
         self.conv1 = conv3x3(3, 64, stride=2, spheactiv=True)
+        # self.conv1 = conv3x3(3, 64, stride=2, spheactiv=False)
         self.bn1 = BatchNorm2d(64)
         self.relu1 = nn.ReLU(inplace=True)
         self.conv2 = conv3x3(64, 64, spheactiv=False)
@@ -120,7 +121,9 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, layers[0], spheactiv_block=False, speactiv_depth=10)
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, spheactiv_block=False, speactiv_depth=10)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2, spheactiv_block=False, speactiv_depth=10)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=False, speactiv_depth=2)
+        # self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=False, speactiv_depth=10)
+        # self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=False, speactiv_depth=2)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=True, speactiv_depth=0)
         self.avgpool = nn.AvgPool2d(7, stride=1)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 

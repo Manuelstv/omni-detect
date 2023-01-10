@@ -32,8 +32,8 @@ from mit_semseg.utils import colorEncode
 #import hiddenlayer as hl
 #from tensorflow.keras.metrics import MeanIoU
 
-global layers_act
-layers_act = [False, False, False, False, False, False]
+# global layers_act
+# layers_act = [False, False, False, False, False, False]
 
 ctrees = [11, 236, 9]
 cground = [153, 108, 6]
@@ -53,7 +53,12 @@ id_plants = 17
 id_canopy = 106
 
 nb_classes_in_dataset = 150
-model_version = "semseg_baseline_fusedclasses_RICOH"
+# model_version = "semseg_baseline"
+# model_version = "semseg_sphe+decoder"
+# model_version = "semseg_sphe_E1+decoder"
+# model_version = "semseg_sphe_E1L4B2+decoder"
+model_version = "semseg_sphe_E1L4B012+decoder"
+# model_version = "semseg_sphe_E1L4B2+decoder_fusedclasses_v2"
 top_half = False
 
 PARSER = argparse.ArgumentParser()
@@ -170,9 +175,9 @@ class OmniSemSeg():
         self.model_persp = self.model_builder("persp")
         # print(self.model_persp)
 
-        # self.datadir = os.path.join(datadir, "INPUT/")
+        self.datadir = os.path.join(datadir, "INPUT/")
         # self.datadir = os.path.join(datadir, "INPUT_SSHORT/")
-        self.datadir = os.path.join(datadir, "images/")
+        # self.datadir = os.path.join(datadir, "images/")
         self.ext = "_rgb.png"
 
         self.list_img = self.load_imgs()
@@ -254,8 +259,8 @@ class OmniSemSeg():
 
         # Run the segmentation at the highest resolution.
         with torch.no_grad():
-            scores_seg = self.model_persp(singleton_batch, segSize=output_size)
-            # scores_seg = self.model_sphe(singleton_batch, segSize=output_size)
+            # scores_seg = self.model_persp(singleton_batch, segSize=output_size)
+            scores_seg = self.model_sphe(singleton_batch, segSize=output_size)
 
         # Get the predicted scores for each pixel
         _, pred_seg = torch.max(scores_seg, dim=1)
@@ -431,6 +436,40 @@ class OmniSemSeg():
             img_edit.text((posx, posy), self.names[ipred+1], text_color, font=self.fnt, anchor="ls")
             img_edit.rectangle((posx-30, posy-20, posx-10, posy), fill=(self.colors[ipred][0], self.colors[ipred][1], self.colors[ipred][2]), outline=(255, 255, 255))
             idx_loc += 1
+
+        save_dir = os.path.join(self.savedir, model_version)
+        os.makedirs(save_dir, exist_ok=True)
+        new_im.save(os.path.join(save_dir,  name_img + '_pred.png'))
+
+    def save_single_nogt_noclass(self, img_orig, pred_seg, model_version):
+        name_img = (img_orig.split('/')[-1])[0:-8]
+
+        # colorize prediction
+        pred_seg_color = colorEncode(pred_seg, self.colors).astype(numpy.uint8)
+
+        # aggregate images and save
+        img_final = PIL.Image.fromarray(pred_seg_color)
+
+        new_im = PIL.Image.new('RGB', (img_final.size[0], 2*img_final.size[1]))
+
+        new_im.paste(PIL.Image.open(img_orig))
+        # gt_image = os.path.join(self.datadir, name_img+'_seg.png')
+        # new_im.paste(PIL.Image.open(gt_image), (int(img_final.size[0]/2), 0))
+        new_im.paste(img_final, (0, img_final.size[1]))
+
+        # img_edit = ImageDraw.Draw(new_im)
+        # text_color = (255, 255, 255)
+        # ipred_unique = numpy.unique(pred_seg[:, :], return_counts=True)[0]
+        # ipred_ratio = 10
+        # ipred_dist = int(img_final.size[1]/ipred_ratio)
+        # idx_loc = 0
+        # for ipred in ipred_unique:
+        #     # print(ipred+1)
+        #     posx = int(img_final.size[0]*4/10) + 150 * numpy.floor(idx_loc/ipred_ratio)
+        #     posy = img_final.size[1] + ipred_dist * (idx_loc % ipred_ratio) + ipred_dist/2
+        #     img_edit.text((posx, posy), self.names[ipred+1], text_color, font=self.fnt, anchor="ls")
+        #     img_edit.rectangle((posx-30, posy-20, posx-10, posy), fill=(self.colors[ipred][0], self.colors[ipred][1], self.colors[ipred][2]), outline=(255, 255, 255))
+        #     idx_loc += 1
 
         save_dir = os.path.join(self.savedir, model_version)
         os.makedirs(save_dir, exist_ok=True)
@@ -694,7 +733,7 @@ class semseg_metric():
 
 
 def iou_mean(pred, target, n_classes=1):
-    #n_classes ：the number of classes in your dataset,not including background
+    # n_classes ：the number of classes in your dataset,not including background
     # for mask and ground-truth label, not probability map
     ious = []
     iousSum = 0
@@ -754,7 +793,8 @@ def main():
 
             print("Doing for ", str(elt))
             pred_seg = OSS.semseg_single_pred(elt)
-            OSS.save_single_nogt(elt, pred_seg, model_version)
+            # OSS.save_single_nogt(elt, pred_seg, model_version)
+            OSS.save_single_nogt_noclass(elt, pred_seg, model_version)
             # print(numpy.unique(pred_seg, return_counts=True))
 
     elif IMODE == "eval":
@@ -790,7 +830,7 @@ def main():
             OSS.save_single_nogt(elt, pred_seg, model_version)
 
             # print(numpy.unique(semseg_gt_id, return_counts=True))
-            # print(numpy.unique(pred_persp, return_counts=True))
+            # print(numpy.unique(pred_seg, return_counts=True))
 
             pred_seg_tmp = pred_seg
             semseg_gt_id_tmp = semseg_gt_id
@@ -832,6 +872,41 @@ def main():
         # print("KERAS v1 GMIOU : {}, giou : {}, MIOU: {} Acc : {}".format(giou_list[-1, 0], giou_list[-1, 1:], np.mean(iou_list[1:, 0]), np.mean(acc_list)))
         # print("KERAS v2 GMIOU : {}, giou : {}, MIOU: {} Acc : {}".format(0, [np.mean(iou_list_v2[0, 1:]),
         # np.mean(iou_list_v2[1, 1:]), np.mean(iou_list_v2[2, 1:])], np.mean(miou_list_v2[:, -1]), np.mean(miou_list_v2[:, 0])))
+
+    elif IMODE == "classes":
+
+        nb_classes_in_dataset = 150
+
+        iou_glob_list = np.empty(5)
+        iou_loc_list = np.empty(5)
+        list_classes = np.zeros([len(OSS.list_img), 30]) - 1
+        np_pred_tabl = np.zeros([150])
+        nb_pred = 0
+
+        semseg_metric_glob = semseg_metric()
+
+        for idx, elt in enumerate(OSS.list_img):
+            torch.cuda.synchronize()
+            tic = time.perf_counter()
+
+            print("Doing for ", str(elt))
+            pred_seg = OSS.semseg_single_pred(elt)
+            # OSS.save_single_nogt(elt, pred_seg, model_version)
+
+            # print(numpy.unique(semseg_gt_id, return_counts=True))
+            uni_classes, nb_pred_classes = numpy.unique(pred_seg, return_counts=True)
+            # print(uni_classes)
+
+            nb_pred += len(uni_classes)
+
+            for ielt in range(len(uni_classes)):
+                list_classes[idx, ielt] = uni_classes[ielt]
+                np_pred_tabl[uni_classes[ielt]] += nb_pred_classes[ielt]
+
+        print("FROM NB PRED AVG {}".format(nb_pred/len(OSS.list_img)))
+
+        np.savetxt(os.path.join(OSS.savedir, model_version) + "/list_classes.csv", list_classes, delimiter=",")
+        np.savetxt(os.path.join(OSS.savedir, model_version) + "/np_pred_tabl.csv", np_pred_tabl, delimiter=",")
 
     elif IMODE == "compare":
 

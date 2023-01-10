@@ -392,8 +392,8 @@ class DeformConv2d_sphe2(nn.Module):
         # h2 = int((x.shape[2]-self.kernel_size[0]+2*self.padding[0])/self.stride[0]+1)
         # w2 = int((x.shape[3]-self.kernel_size[1]+2*self.padding[1])/self.stride[1]+1)
         # https://cs231n.github.io/convolutional-networks/
-        h2 = int((x.shape[-2] + 2*self.padding[0] - self.kernel_size[0] - (self.kernel_size[0]-1)*(self.padding[0]-1))/self.stride[0] + 1)
-        w2 = int((x.shape[-1] + 2*self.padding[1] - self.kernel_size[1] - (self.kernel_size[1]-1)*(self.padding[1]-1))/self.stride[1] + 1)
+        h2 = int((x.shape[-2] + 2*self.padding[0] - self.kernel_size[0] - (self.kernel_size[0]-1)*(self.dilation[0]-1))/self.stride[0] + 1)
+        w2 = int((x.shape[-1] + 2*self.padding[1] - self.kernel_size[1] - (self.kernel_size[1]-1)*(self.dilation[1]-1))/self.stride[1] + 1)
         # https://discuss.pytorch.org/t/how-to-keep-the-shape-of-input-and-output-same-when-dilation-conv/14338
         if isactiv:
             if offset_file == '':
@@ -405,11 +405,10 @@ class DeformConv2d_sphe2(nn.Module):
                     offset_file = './OFFSETS/offset_'+str(w2)+'_'+str(h2)+'_'+str(self.kernel_size[0])+'_'+str(
                         self.kernel_size[1])+'_'+str(self.stride[0])+'_'+str(self.stride[1])+'_'+str(self.dilation[0])+'.pt'
                 offset = torch.load(offset_file).cuda()
-                offset = torch.cat([offset for _ in range(x.shape[0])], dim=0)
                 print("Loading offset file: ", offset_file)
         else:
             offset = torch.zeros(1, 2*self.kernel_size[0]*self.kernel_size[1], h2, w2).cuda()
-        # print("OFFSET Shape ", offset.shape)
+        print("OFFSET Shape ", offset.shape)
         return offset
 
     def forward(self, input: Tensor, mask: Optional[Tensor] = None) -> Tensor:
@@ -427,8 +426,12 @@ class DeformConv2d_sphe2(nn.Module):
         new_input = input
         # new_input = torch.nn.functional.pad(input, (self.padding[0], self.padding[0], self.padding[1], self.padding[1]), mode='circular')
 
-        # print(self.__repr__())
+        #print(self.__repr__())
+        #print("INPUT Shape Sphe 2", input.shape)
         if self.init == 0:
+            # h2 = int((x.shape[-2] + 2*self.padding[0] - self.kernel_size[0] - (self.kernel_size[0]-1)*(self.padding[0]-1))/self.stride[0] + 1)
+            # w2 = int((x.shape[-1] + 2*self.padding[1] - self.kernel_size[1] - (self.kernel_size[1]-1)*(self.padding[1]-1))/self.stride[1] + 1)
+
             print("python3 mit_semseg/models_v2/create_offset_tensor.py --w {} --h {} --k {} --s {} --p {} --d {}".format(input.shape[-1], input.shape[-2], self.kernel_size[0], self.stride[0], self.padding[0], self.dilation[0]))
             # print("Using DeformConv2d_sphe")
             # print("INPUT Shape Sphe 2", input.shape)
@@ -479,4 +482,5 @@ class DeformConv2d_sphe2(nn.Module):
         s += ', bias=False' if self.bias is None else ''
         s += ')'
         return s.format(**self.__dict__)
+
 
