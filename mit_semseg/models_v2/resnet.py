@@ -1,4 +1,4 @@
-from mit_semseg.models_v2.DeformConv2d_sphe import DeformConv2d_sphe2
+from mit_semseg.models_v2.DeformConv2d_sphe import DeformConv2d_sphe
 import torch.nn as nn
 import math
 from .utils import load_url
@@ -19,8 +19,8 @@ model_urls = {
 def conv3x3(in_planes, out_planes, stride=1, spheactiv=False):
     "3x3 convolution with padding"
     if spheactiv:
-        return DeformConv2d_sphe2(in_planes, out_planes, kernel_size=3, stride=stride,
-                                  padding=1, bias=False)
+        return DeformConv2d_sphe(in_planes, out_planes, kernel_size=3, stride=stride,
+                                 padding=1, bias=False)
     else:
         return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
                          padding=1, bias=False)
@@ -66,8 +66,8 @@ class Bottleneck(nn.Module):
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = BatchNorm2d(planes)
         if spheactiv:
-            self.conv2 = DeformConv2d_sphe2(planes, planes, kernel_size=3, stride=stride,
-                                            padding=1, bias=False)
+            self.conv2 = DeformConv2d_sphe(planes, planes, kernel_size=3, stride=stride,
+                                           padding=1, bias=False)
         else:
             self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
                                    padding=1, bias=False)
@@ -121,14 +121,14 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, layers[0], spheactiv_block=False, speactiv_depth=10)
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, spheactiv_block=False, speactiv_depth=10)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2, spheactiv_block=False, speactiv_depth=10)
-        # self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=False, speactiv_depth=10)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=False, speactiv_depth=10)
         # self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=False, speactiv_depth=2)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=True, speactiv_depth=0)
+        # self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=True, speactiv_depth=0)
         self.avgpool = nn.AvgPool2d(7, stride=1)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, DeformConv2d_sphe2):
+            if isinstance(m, nn.Conv2d) or isinstance(m, DeformConv2d_sphe):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                 m.weight.data.normal_(0, math.sqrt(2. / n))
             elif isinstance(m, BatchNorm2d):

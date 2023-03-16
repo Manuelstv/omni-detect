@@ -1,10 +1,10 @@
+from mit_semseg.models_v2.DeformConv2d_sphe import DeformConv2d_sphe
 import torch
 import torch.nn as nn
 from . import resnet, resnext, mobilenet, hrnet
 from mit_semseg.lib.nn import SynchronizedBatchNorm2d
 BatchNorm2d = SynchronizedBatchNorm2d
 
-from mit_semseg.models_v2.DeformConv2d_sphe import DeformConv2d_sphe2
 
 class SegmentationModuleBase(nn.Module):
     def __init__(self):
@@ -35,11 +35,9 @@ class SegmentationModule(SegmentationModuleBase):
             if torch.cuda.is_available():
                 feed_dict['img_data'] = feed_dict['img_data'].cuda()
                 feed_dict['seg_label'] = feed_dict['seg_label'].cuda()
-            else:
-                raise RunTimeError('Cannot convert torch.Floattensor into torch.cuda.FloatTensor')
 
         if segSize is None:
-            if self.deep_sup_scale is not None: # use deep supervision technique
+            if self.deep_sup_scale is not None:  # use deep supervision technique
                 (pred, pred_deepsup) = self.decoder(self.encoder(feed_dict['img_data'], return_feature_maps=True))
             else:
                 pred = self.decoder(self.encoder(feed_dict['img_data'], return_feature_maps=True))
@@ -62,7 +60,7 @@ class ModelBuilder:
     @staticmethod
     def weights_init(m):
         classname = m.__class__.__name__
-        if classname.find('Conv') != -1 or classname.find('DeformConv2d_sphe2') != -1:
+        if classname.find('Conv') != -1 or classname.find('DeformConv2d_sphe') != -1:
             nn.init.kaiming_normal_(m.weight.data)
         elif classname.find('BatchNorm') != -1:
             m.weight.data.fill_(1.)
@@ -98,8 +96,8 @@ class ModelBuilder:
             orig_resnet = resnet.__dict__['resnet50'](pretrained=pretrained)
             net_encoder = ResnetDilated(orig_resnet, dilate_scale=8)
         elif arch == 'resnet50dilated_sphe':
-            orig_resnet = resnet.__dict__['resnet50'](pretrained=pretrained, spheactiv = True)
-            net_encoder = ResnetDilated(orig_resnet, dilate_scale=8, spheactiv = True)
+            orig_resnet = resnet.__dict__['resnet50'](pretrained=pretrained, spheactiv=True)
+            net_encoder = ResnetDilated(orig_resnet, dilate_scale=8, spheactiv=True)
         elif arch == 'resnet101':
             orig_resnet = resnet.__dict__['resnet101'](pretrained=pretrained)
             net_encoder = Resnet(orig_resnet)
@@ -108,7 +106,7 @@ class ModelBuilder:
             net_encoder = ResnetDilated(orig_resnet, dilate_scale=8)
         elif arch == 'resnext101':
             orig_resnext = resnext.__dict__['resnext101'](pretrained=pretrained)
-            net_encoder = Resnet(orig_resnext) # we can still use class Resnet
+            net_encoder = Resnet(orig_resnext)  # we can still use class Resnet
         elif arch == 'hrnetv2':
             net_encoder = hrnet.__dict__['hrnetv2'](pretrained=pretrained)
         else:
@@ -147,13 +145,13 @@ class ModelBuilder:
                 num_class=num_class,
                 fc_dim=fc_dim,
                 use_softmax=use_softmax,
-                sphe_activ = False)
+                sphe_activ=False)
         elif arch == 'ppm_deepsup_sphe':
             net_decoder = PPMDeepsup(
                 num_class=num_class,
                 fc_dim=fc_dim,
                 use_softmax=use_softmax,
-                sphe_activ = True)
+                sphe_activ=True)
         elif arch == 'upernet_lite':
             net_decoder = UPerNet(
                 num_class=num_class,
@@ -180,19 +178,21 @@ class ModelBuilder:
 def conv3x3_bn_relu(in_planes, out_planes, stride=1):
     "3x3 convolution + BN + relu"
     return nn.Sequential(
-            nn.Conv2d(in_planes, out_planes, kernel_size=3,
-                      stride=stride, padding=1, bias=False),
-            BatchNorm2d(out_planes),
-            nn.ReLU(inplace=True),
-            )
+        nn.Conv2d(in_planes, out_planes, kernel_size=3,
+                  stride=stride, padding=1, bias=False),
+        BatchNorm2d(out_planes),
+        nn.ReLU(inplace=True),
+    )
+
 
 def conv3x3_bn_relu_sphe(in_planes, out_planes, stride=1):
     "3x3 convolution + BN + relu"
     return nn.Sequential(
-            DeformConv2d_sphe2(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False),
-            BatchNorm2d(out_planes),
-            nn.ReLU(inplace=True),
-            )
+        DeformConv2d_sphe(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False),
+        BatchNorm2d(out_planes),
+        nn.ReLU(inplace=True),
+    )
+
 
 class Resnet(nn.Module):
     def __init__(self, orig_resnet):
@@ -222,10 +222,14 @@ class Resnet(nn.Module):
         x = self.relu3(self.bn3(self.conv3(x)))
         x = self.maxpool(x)
 
-        x = self.layer1(x); conv_out.append(x);
-        x = self.layer2(x); conv_out.append(x);
-        x = self.layer3(x); conv_out.append(x);
-        x = self.layer4(x); conv_out.append(x);
+        x = self.layer1(x)
+        conv_out.append(x)
+        x = self.layer2(x)
+        conv_out.append(x)
+        x = self.layer3(x)
+        conv_out.append(x)
+        x = self.layer4(x)
+        conv_out.append(x)
 
         if return_feature_maps:
             return conv_out
@@ -233,7 +237,7 @@ class Resnet(nn.Module):
 
 
 class ResnetDilated(nn.Module):
-    def __init__(self, orig_resnet, dilate_scale=8, spheactiv = True):
+    def __init__(self, orig_resnet, dilate_scale=8, spheactiv=True):
         super(ResnetDilated, self).__init__()
         from functools import partial
 
@@ -264,7 +268,7 @@ class ResnetDilated(nn.Module):
 
     def _nostride_dilate(self, m, dilate):
         classname = m.__class__.__name__
-        if classname.find('Conv') != -1 or classname.find('DeformConv2d_sphe2') != -1:
+        if classname.find('Conv') != -1 or classname.find('DeformConv2d_sphe') != -1:
             # the convolution with stride
             if m.stride == (2, 2):
                 m.stride = (1, 1)
@@ -285,10 +289,14 @@ class ResnetDilated(nn.Module):
         x = self.relu3(self.bn3(self.conv3(x)))
         x = self.maxpool(x)
 
-        x = self.layer1(x); conv_out.append(x);
-        x = self.layer2(x); conv_out.append(x);
-        x = self.layer3(x); conv_out.append(x);
-        x = self.layer4(x); conv_out.append(x);
+        x = self.layer1(x)
+        conv_out.append(x)
+        x = self.layer2(x)
+        conv_out.append(x)
+        x = self.layer3(x)
+        conv_out.append(x)
+        x = self.layer4(x)
+        conv_out.append(x)
 
         if return_feature_maps:
             return conv_out
@@ -402,7 +410,7 @@ class C1(nn.Module):
         x = self.cbr(conv5)
         x = self.conv_last(x)
 
-        if self.use_softmax: # is True during inference
+        if self.use_softmax:  # is True during inference
             x = nn.functional.interpolate(
                 x, size=segSize, mode='bilinear', align_corners=False)
             x = nn.functional.softmax(x, dim=1)
@@ -464,7 +472,7 @@ class PPM(nn.Module):
 # pyramid pooling, deep supervision
 class PPMDeepsup(nn.Module):
     def __init__(self, num_class=150, fc_dim=4096,
-                 use_softmax=False, pool_scales=(1, 2, 3, 6), sphe_activ = False):
+                 use_softmax=False, pool_scales=(1, 2, 3, 6), sphe_activ=False):
         super(PPMDeepsup, self).__init__()
         self.use_softmax = use_softmax
 
@@ -481,7 +489,7 @@ class PPMDeepsup(nn.Module):
         if sphe_activ:
             self.cbr_deepsup = conv3x3_bn_relu_sphe(fc_dim // 2, fc_dim // 4, 1)
             self.conv_last = nn.Sequential(
-                DeformConv2d_sphe2(fc_dim+len(pool_scales)*512, 512, kernel_size=3, padding=1, bias=False),
+                DeformConv2d_sphe(fc_dim+len(pool_scales)*512, 512, kernel_size=3, padding=1, bias=False),
                 BatchNorm2d(512),
                 nn.ReLU(inplace=True),
                 nn.Dropout2d(0.1),
@@ -594,15 +602,15 @@ class UPerNet(nn.Module):
         fpn_feature_list = [f]
         for i in reversed(range(len(conv_out) - 1)):
             conv_x = conv_out[i]
-            conv_x = self.fpn_in[i](conv_x) # lateral branch
+            conv_x = self.fpn_in[i](conv_x)  # lateral branch
 
             f = nn.functional.interpolate(
-                f, size=conv_x.size()[2:], mode='bilinear', align_corners=False) # top-down branch
+                f, size=conv_x.size()[2:], mode='bilinear', align_corners=False)  # top-down branch
             f = conv_x + f
 
             fpn_feature_list.append(self.fpn_out[i](f))
 
-        fpn_feature_list.reverse() # [P2 - P5]
+        fpn_feature_list.reverse()  # [P2 - P5]
         output_size = fpn_feature_list[0].size()[2:]
         fusion_list = [fpn_feature_list[0]]
         for i in range(1, len(fpn_feature_list)):

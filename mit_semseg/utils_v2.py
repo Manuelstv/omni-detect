@@ -1,21 +1,14 @@
 from __future__ import print_function, division
 import os
-import time
 import cv2
 import sys
-import math
 import tensorflow as tf
 # import tensorflow.contrib.slim as slim
 import numpy as np
-import time
 import datetime
-import os
 import random
-# from scipy.misc import imread
-import ast
-from sklearn.metrics import precision_score, \
-    recall_score, confusion_matrix, classification_report, \
-    accuracy_score, f1_score
+from scipy.misc import imread
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 from mit_semseg.models_v2.helpers import reverse_one_hot
 

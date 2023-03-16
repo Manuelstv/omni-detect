@@ -1,4 +1,3 @@
-
 import math
 import torch
 from torch.nn.modules.utils import _pair
@@ -7,7 +6,6 @@ import sys
 
 
 def rotation_matrix(axis, theta):
-    """ code by cfernandez and jmfacil """
     """
     Return the rotation matrix associated with counterclockwise rotation about
     the given axis by theta radians.
@@ -25,10 +23,9 @@ def rotation_matrix(axis, theta):
 
 
 def equi_coord(pano_W, pano_H, k_W, k_H, u, v):
-    """ code by cfernandez and jmfacil """
     fov_w = k_W * math.radians(360./float(pano_W))
     focal = (float(k_W)/2) / math.tan(fov_w/2)
-    #print(focal)
+    # print(focal)
     c_x = 0
     c_y = 0
 
@@ -72,8 +69,7 @@ def equi_coord(pano_W, pano_H, k_W, k_H, u, v):
 
 
 def distortion_aware_map(pano_W, pano_H, k_W, k_H, s_width=1, s_height=1, bs=16):
-    """ code by cfernandez and jmfacil """
-    #n=1
+    # n=1
     offset = torch.zeros(2*k_H*k_W, pano_H, pano_W, device='cpu', dtype=torch.float32)
 
     for v in range(0, pano_H, s_height):
@@ -87,13 +83,12 @@ def distortion_aware_map(pano_W, pano_H, k_W, k_H, s_width=1, s_height=1, bs=16)
     offset = torch.cat([offset for _ in range(bs)], dim=0)
     offset.requires_grad_(False)
     print(offset.shape)
-    #print(offset)
+    # print(offset)
     return offset
 
 
 def distortion_aware_col(pano_W, pano_H, k_W, k_H, s_width=1, s_height=1, bs=1):
-    """ code by cfernandez and jmfacil """
-    #n=1
+    # n=1
     print(pano_W, pano_H, k_W, k_H, s_width, s_height, bs)
     offset = torch.zeros(2*k_H*k_W, pano_H, 1, device='cpu', dtype=torch.float32)
 
@@ -108,43 +103,59 @@ def distortion_aware_col(pano_W, pano_H, k_W, k_H, s_width=1, s_height=1, bs=1):
     offset = torch.cat([offset for _ in range(bs)], dim=0)
     offset.requires_grad_(False)
     print(offset.shape)
-    #print(offset)
+    # print(offset)
     return offset
 
 
+arguments_BS = 1
 arguments_WIDTH = 1
 arguments_HEIGHT = 10
 arguments_KERNEL = 3
-arguments_PADDING = 1
+arguments_KERNEL_X = 3
+arguments_KERNEL_Y = 3
+arguments_PADDING = 0
+arguments_PADDING_X = 1
+arguments_PADDING_Y = 1
 arguments_STRIDE = 1
 arguments_DILATION = 1
 
 for strOption, strArgument in getopt.getopt(sys.argv[1:], '', [strParameter[2:] + '=' for strParameter in sys.argv[1::2]])[0]:
-	if strOption == '--w' and strArgument != '':
-	    arguments_WIDTH = strArgument
-	if strOption == '--h' and strArgument != '':
-	    arguments_HEIGHT = strArgument
-	if strOption == '--k' and strArgument != '':
-	    arguments_KERNEL = strArgument
-	if strOption == '--p' and strArgument != '':
-	    arguments_PADDING = strArgument
-	if strOption == '--s' and strArgument != '':
-	    arguments_STRIDE = strArgument
-	if strOption == '--d' and strArgument != '':
-	    arguments_DILATION = strArgument
+    if strOption == '--w' and strArgument != '':
+        arguments_WIDTH = strArgument
+    if strOption == '--h' and strArgument != '':
+        arguments_HEIGHT = strArgument
+    if strOption == '--k' and strArgument != '':
+        arguments_KERNEL = strArgument
+    if strOption == '--kx' and strArgument != '':
+        arguments_KERNEL_X = strArgument
+    if strOption == '--ky' and strArgument != '':
+        arguments_KERNEL_Y = strArgument
+    if strOption == '--p' and strArgument != '':
+        arguments_PADDING = strArgument
+    if strOption == '--px' and strArgument != '':
+        arguments_PADDING_X = strArgument
+    if strOption == '--py' and strArgument != '':
+        arguments_PADDING_Y = strArgument
+    if strOption == '--s' and strArgument != '':
+        arguments_STRIDE = strArgument
+    if strOption == '--d' and strArgument != '':
+        arguments_DILATION = strArgument
+    if strOption == '--bs' and strArgument != '':
+        arguments_BS = strArgument
 
 if __name__ == "__main__":
 
     torch.manual_seed(0)
-    input = torch.zeros(1, 1, int(arguments_HEIGHT), int(arguments_WIDTH))
+    input = torch.zeros(int(arguments_BS), 1, int(arguments_HEIGHT), int(arguments_WIDTH))
     weight = torch.zeros(1, 1, int(arguments_KERNEL), int(arguments_KERNEL))
+    # weight = torch.zeros(1,1,int(arguments_KERNEL_Y),int(arguments_KERNEL_X)) # Si k_x != k_y
     stride = int(arguments_STRIDE)
     padding = int(arguments_PADDING)
     dilation = int(arguments_DILATION)
-    #print(input.dtype)
 
     stride_h, stride_w = _pair(stride)
     pad_h, pad_w = _pair(padding)
+    # pad_h, pad_w = [int(arguments_PADDING_Y),int(arguments_PADDING_X)] # Si p_x != p_y
     dil_h, dil_w = _pair(dilation)
     weights_h, weights_w = weight.shape[-2:]
     bs, n_in_channels, in_h, in_w = input.shape
@@ -152,11 +163,11 @@ if __name__ == "__main__":
     pano_W = int((in_w + 2*pad_w - dil_w*(weights_w-1)-1)//stride_w + 1)
     pano_H = int((in_h + 2*pad_h - dil_h*(weights_h-1)-1)//stride_h + 1)
 
-    print(pano_W, pano_H, weights_w, weights_h, stride_w, stride_h, dilation)
+    print(pano_W, pano_H, weights_w, weights_h, stride_w, stride_h, bs)
+    k_W = weights_w
+    k_H = weights_h
+    offset = distortion_aware_map(pano_W, pano_H, k_W, k_H, s_width=stride_w, s_height=stride_h, bs=bs)
+    torch.save(offset, './OFFSETS/offset_'+str(pano_W)+'_'+str(pano_H)+'_'+str(k_W)+'_'+str(k_H)+'_'+str(stride_w)+'_'+str(stride_h)+'_'+str(bs)+'.pt')
 
-    offset = distortion_aware_map(pano_W, pano_H, weights_w, weights_h, s_width=stride_w, s_height=stride_h, bs=bs)
-    torch.save(offset, './OFFSETS/offset_'+str(pano_W)+'_'+str(pano_H)+'_'+str(weights_w)+'_'+str(weights_h)+'_'+str(stride_w)+'_'+str(stride_h)+'_'+str(dilation)+'.pt')
-    #offset_col = distortion_aware_col(pano_W, pano_H, weights_w, weights_h, s_width = stride_w, s_height = stride_h, bs = bs)
-    #torch.save(offset_col,'./OFFSETS/offset_col_'+str(pano_H)+'_'+str(weights_w)+'_'+str(weights_h)+'_'+str(stride_w)+'_'+str(stride_h)+'_'+str(bs)+'.pt')
-
-    #offset = offset.to(input.device)
+    # offset_col = distortion_aware_col(pano_W, pano_H, weights_w, weights_h, s_width = stride_w, s_height = stride_h, bs = bs) # Pour obtenir uniquement une colonne
+    # torch.save(offset_col,'./OFFSETS/offset_col_'+str(pano_H)+'_'+str(weights_w)+'_'+str(weights_h)+'_'+str(stride_w)+'_'+str(stride_h)+'_'+str(bs)+'.pt')
