@@ -1,13 +1,27 @@
+# Citation
+This repositeory contains the semantic segmentation model used in our article "OMNI-CONV: Generalization of the Omnidirectional Distortion-Aware Convolutions".
+'
+@article{Artizzu2023,
+	title        = {{OMNI-CONV: Generalization of the Omnidirectional Distortion-Aware Convolutions}},
+	author       = {Artizzu, Charles-Olivier and Allibert, Guillaume and Demonceaux, Cédric},
+	year         = 2023,
+	journal      = {Journal of Imaging},
+	volume       = 9,
+	number       = 2,
+	article-number = 29,
+	url          = {https://www.mdpi.com/2313-433X/9/2/29},
+	pubmedid     = 36826948,
+	issn         = {2313-433X},
+	doi          = {10.3390/jimaging9020029}
+}
+'
+
 # Installation
+Create the python3 env and install packages:
 '
 python3 -m venv SEMSEG_ENV;
 source SEMSEG_ENV/bin/activate;
 pip3 install pytorch, scipy, tensorflow
-'
-
-# Evaluation
-'
-python3 test_semseg_v3.py -d DATASET_PATH -m eval
 '
 
 # Spherical adaptation
@@ -37,3 +51,11 @@ class ResNet(nn.Module):
         # self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=False, speactiv_depth=2)
         # self.layer4 = self._make_layer(block, 512, layers[3], stride=2, spheactiv_block=True, speactiv_depth=0)
 '
+
+# Evaluation
+Run the evaluation of the model on DATASET_PATH:
+'
+python3 test_semseg_v3.py -d DATASET_PATH -m eval
+'
+
+
