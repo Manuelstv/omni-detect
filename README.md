@@ -1,5 +1,6 @@
 # Citation
 This repositeory contains the semantic segmentation model used in our article "OMNI-CONV: Generalization of the Omnidirectional Distortion-Aware Convolutions".
+
 '
 @article{Artizzu2023,
 	title        = {{OMNI-CONV: Generalization of the Omnidirectional Distortion-Aware Convolutions}},
@@ -18,6 +19,7 @@ This repositeory contains the semantic segmentation model used in our article "O
 
 # Installation
 Create the python3 env and install packages:
+
 '
 python3 -m venv SEMSEG_ENV;
 source SEMSEG_ENV/bin/activate;
@@ -26,6 +28,7 @@ pip3 install pytorch, scipy, tensorflow
 
 # Spherical adaptation
 Distortion-aware convolutions are located in "resnet.py" file from line 104 to 126 and are activated by the boolean parameter "spheactiv" for each layer. 
+
 '
 class ResNet(nn.Module):
 
@@ -54,6 +57,7 @@ class ResNet(nn.Module):
 
 # Evaluation
 Run the evaluation of the model on DATASET_PATH:
+
 '
 python3 test_semseg_v3.py -d DATASET_PATH -m eval
 '
