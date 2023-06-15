@@ -5,7 +5,7 @@ ckpt/
 vis/
 log/
 pretrained/
-data/ADEChallengeData2016/
+data
 OUTPUT/
 notebooks/
 SEMSEG_ENV/
