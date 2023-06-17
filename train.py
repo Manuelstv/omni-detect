@@ -15,7 +15,8 @@ from mit_semseg.dataset import TrainDataset
 from mit_semseg.models import ModelBuilder, SegmentationModule
 from mit_semseg.utils import AverageMeter, parse_devices, setup_logger
 from mit_semseg.lib.nn import UserScatteredDataParallel, user_scattered_collate, patch_replication_callback
-
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+torch.cuda.empty_cache()
 
 # train one epoch
 def train(segmentation_module, iterator, optimizers, history, epoch, cfg):
@@ -227,7 +228,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--gpus",
-        default="0-3",
+        default="0",
         help="gpus to use, e.g. 0-3 or 0,1,2,3"
     )
     parser.add_argument(
@@ -276,5 +277,8 @@ if __name__ == '__main__':
 
     random.seed(cfg.TRAIN.seed)
     torch.manual_seed(cfg.TRAIN.seed)
+
+
+    print('AAAAAAAAAAAAAAAAAAA', gpus)
 
     main(cfg, gpus)

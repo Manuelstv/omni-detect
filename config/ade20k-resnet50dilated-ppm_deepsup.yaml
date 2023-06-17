@@ -1,7 +1,7 @@
 DATASET:
 #/home/mstveras/semantic-segmentation-pytorch/data
-  root_dataset: "ADEChallengeData2016"
-  list_train: "data/training.odgt"
+  root_dataset: "/home/mstveras/semantic-segmentation-pytorch/data"
+  list_train: "data/training_small.odgt"
   list_val: "data/validation.odgt"
   #root_dataset: "./data/"
   #list_train: "./data/training.odgt"
@@ -22,7 +22,7 @@ TRAIN:
   batch_size_per_gpu: 2
   num_epoch: 20
   start_epoch: 0
-  epoch_iters: 5000
+  epoch_iters: 500
   optim: "SGD"
   lr_encoder: 0.02
   lr_decoder: 0.02
